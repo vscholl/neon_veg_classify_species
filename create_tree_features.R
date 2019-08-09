@@ -234,15 +234,23 @@ veg_merged_stems_sf <- sf::st_as_sf(x = veg_merged
 sf::st_write(obj = veg_merged_stems_sf
              ,dsn = "data/data_output/mapped_stem_points_w_height_diam.shp")
 
-
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
 # height & crown diameter
+merged_buff_sf <- sf::st_buffer(x = veg_merged_stems_sf
+                                # divide max diameter by 2 for the radius
+                                ,dist = round((merged_stems_sf$maxCrownDiameter/2)))
+sf::st_write(obj = merged_buff_sf
+             ,dsn = "data/data_output/max_diam_polygons.shp")
 
 
-woody_df_to_shp(df = woody_merged, 
-                coord_ref = coord_ref,
-                shrink = crown_size_factor,
-                num_sides = 24,
-                shp_filename = paste(out_dir,
-                                     "polygons_all",
-                                     sep = ""))
+
+# Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
+# height & crown diameter, after multibole entries were removed. 
+multibole_removed_stems_sf <- sf::st_as_sf(x = veg_multibole_removed
+                                    ,coords = c("easting", "northing")
+                                    ,crs = coord_ref) 
+multibole_removed_buff_sf <- sf::st_buffer(x = multibole_removed_stems_sf
+                ,dist = round((multibole_removed_stems_sf$maxCrownDiameter/2)))
+sf::st_write(obj = multibole_removed_buff_sf
+             ,dsn = "data/data_output/max_diam_polygons_w_multibole_removed.shp")
+
