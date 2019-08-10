@@ -135,72 +135,6 @@ tiles <- list_tiles_with_veg(veg_df = veg_merged
                             ,out_dir = "data/data_raw/")
 
 
-
-# Remove multi-bole entries -----------------------------------------------
-
-# Identify multi-bole entries: sometimes, there are multiple entries with 
-# identical coordinates, height, and crown diameter (but their individualID's 
-# are different, with "A", "B", etc. appended on the end of the last five 
-# numbers.) In this step, the individualID values are assessed to find 
-# multi-bole sets. If the coordinates, height, and crown diameters are 
-# identical, then the entry with a letter appended on the end is deleted 
-# from the analysis. This prevents duplicate polygons being used to extract 
-# spectra. 
-
-# List all individual ID strings 
-ind_IDs_all <- as.character(unique(droplevels(veg_merged$individualID)))
-
-# Split each individual ID using a period delimiter
-last_id_section <- sapply(stringr::str_split(ind_IDs_all, "[.]"), tail, 1)
-
-# Create another list without any letters
-last_digits <- gsub("[^0-9]", "", last_id_section)
-
-# Create a boolean vector where bole entries (which contain letters)
-# are True, but stem entries (without letters) are False 
-is_bole <- last_id_section != last_digits
-
-# Create a lookup table with the id information
-id_lut <- as.data.frame(last_digits) %>% 
-  dplyr::mutate(individualIDs_all = ind_IDs_all
-                ,last_id_section = last_id_section
-                ,is_bole = is_bole
-                ,height = veg_merged$height
-                ,maxCrownDiameter = veg_merged$maxCrownDiameter)
-
-# Count the frequency of each ID number. Identify the ID's with more than 
-# one entry. 
-multiple_ids <- as.data.frame(table(last_digits)) %>% 
-  dplyr::filter(Freq >1)
-
-# Create a list to populate with individualIDs to remove
-remove_ids <- c()
-
-# loop through the ID's that appear more than once in the data set
-for(id in as.character(multiple_ids$last_digits)){
-  
-  # get the complete individual IDs 
-  duplicates <- print(id_lut[id_lut$last_digits == id,])
-  
-  # see if the height and diameter values are identical 
-  if(var(duplicates$height)==0 && var(duplicates$maxCrownDiameter) == 0){
-    remove_ids <- c(remove_ids, 
-                    duplicates$individualIDs_all[duplicates$is_bole==TRUE])
-  }
-  
-}
-
-# Remove the entries with the multi-bole individualIDs identified in the 
-# previous step. 
-veg_multibole_removed <- veg_merged %>% 
-  dplyr::filter(!(individualID %in% remove_ids))
-
-# Count how many trees are left after removing multi-bole entries
-tree_count <- rbind(tree_counts
-                    ,data.frame(count = c(nrow(veg_multibole_removed))
-    ,description = c(" entries remain after removing multi-bole entries")))
-
-
 # Create point and polygon features for each woody vegetation individual ------
 
 
@@ -213,13 +147,13 @@ coord_ref <- sf::st_crs(paste("+proj=utm +zone=",zone,
 
 
 # Write shapefile with a POINT for every mapped stem. 
-# NOTE this includes multi-bole entries and individuals without height or 
+# NOTE these include multi-bole entries and individuals without height or 
 # crown diameter.
 mapped_stems_sf <- sf::st_as_sf(x = veg_utm
                              ,coords = c("easting", "northing")
                              ,crs = coord_ref)
 sf::st_write(obj = mapped_stems_sf
-             ,dsn = "data/data_output/all_mapped_stem_points.shp")
+             ,dsn = "data/data_output/veg_points_all.shp")
 
 # plot all mapped stem locations
 # ggplot2::ggplot() +
@@ -232,25 +166,25 @@ veg_merged_stems_sf <- sf::st_as_sf(x = veg_merged
                                 ,coords = c("easting", "northing")
                                 ,crs = coord_ref)
 sf::st_write(obj = veg_merged_stems_sf
-             ,dsn = "data/data_output/mapped_stem_points_w_height_diam.shp")
+             ,dsn = "data/data_output/veg_points_w_height_diam.shp")
 
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
-# height & crown diameter
+# height & crown diameter. Size: Maximum crown diameter
 merged_buff_sf <- sf::st_buffer(x = veg_merged_stems_sf
                                 # divide max diameter by 2 for the radius
                                 ,dist = round((merged_stems_sf$maxCrownDiameter/2)))
 sf::st_write(obj = merged_buff_sf
-             ,dsn = "data/data_output/max_diam_polygons.shp")
-
+             ,dsn = "data/data_output/veg_polygons_max_diam.shp")
 
 
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
-# height & crown diameter, after multibole entries were removed. 
-multibole_removed_stems_sf <- sf::st_as_sf(x = veg_multibole_removed
-                                    ,coords = c("easting", "northing")
-                                    ,crs = coord_ref) 
-multibole_removed_buff_sf <- sf::st_buffer(x = multibole_removed_stems_sf
-                ,dist = round((multibole_removed_stems_sf$maxCrownDiameter/2)))
-sf::st_write(obj = multibole_removed_buff_sf
-             ,dsn = "data/data_output/max_diam_polygons_w_multibole_removed.shp")
+# height & crown diameter. Size: 1/2 Maximum crown diameter
+merged_buff_sf <- sf::st_buffer(x = veg_merged_stems_sf
+                                # divide max diameter by 2 for the radius
+                                ,dist = round((merged_stems_sf$maxCrownDiameter/4)))
+sf::st_write(obj = merged_buff_sf
+             ,dsn = "data/data_output/veg_polygons_half_diam.shp")
 
+
+  
+  
