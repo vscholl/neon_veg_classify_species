@@ -153,7 +153,8 @@ mapped_stems_sf <- sf::st_as_sf(x = veg_utm
                              ,coords = c("easting", "northing")
                              ,crs = coord_ref)
 sf::st_write(obj = mapped_stems_sf
-             ,dsn = "data/data_output/veg_points_all.shp")
+             ,dsn = "data/data_output/veg_points_all.shp"
+             ,delete_dsn = TRUE)
 
 # plot all mapped stem locations
 # ggplot2::ggplot() +
@@ -166,24 +167,29 @@ veg_merged_stems_sf <- sf::st_as_sf(x = veg_merged
                                 ,coords = c("easting", "northing")
                                 ,crs = coord_ref)
 sf::st_write(obj = veg_merged_stems_sf
-             ,dsn = "data/data_output/veg_points_w_height_diam.shp")
+             ,dsn = "data/data_output/veg_points_w_height_diam.shp"
+             ,delete_dsn = TRUE)
 
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
 # height & crown diameter. Size: Maximum crown diameter
 merged_buff_sf <- sf::st_buffer(x = veg_merged_stems_sf
                                 # divide max diameter by 2 for the radius
-                                ,dist = round((merged_stems_sf$maxCrownDiameter/2)))
+                                ,dist = round((merged_stems_sf$maxCrownDiameter/2)
+                                              ,digits = 1))
 sf::st_write(obj = merged_buff_sf
-             ,dsn = "data/data_output/veg_polygons_max_diam.shp")
+             ,dsn = "data/data_output/veg_polygons_max_diam.shp"
+             ,delete_dsn = TRUE)
 
 
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
 # height & crown diameter. Size: 1/2 Maximum crown diameter
-merged_buff_sf <- sf::st_buffer(x = veg_merged_stems_sf
+merged_buff_sf_half_diam <- sf::st_buffer(x = veg_merged_stems_sf
                                 # divide max diameter by 2 for the radius
-                                ,dist = round((merged_stems_sf$maxCrownDiameter/4)))
-sf::st_write(obj = merged_buff_sf
-             ,dsn = "data/data_output/veg_polygons_half_diam.shp")
+                                ,dist = round((merged_stems_sf$maxCrownDiameter/4)
+                                              ,digits = 1))
+sf::st_write(obj = merged_buff_sf_half_diam
+             ,dsn = "data/data_output/veg_polygons_half_diam.shp"
+             ,delete_dsn = TRUE)
 
 
   
