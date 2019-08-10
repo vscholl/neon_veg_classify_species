@@ -41,8 +41,6 @@ check_create_dir("data/data_output")
 # ------------------------------------------------------------------------
 
 
-
-
 # Let's load the in-situ data straight into R
 veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"   
                                               ,site = "NIWO"              
@@ -50,7 +48,6 @@ veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"
                                               #,enddate = "YYYY-MM"
                                               ,package = "basic"          
                                               ,check.size = T)
-
 
 
 # mappingandtagging -----------------------------------------------------------
@@ -190,7 +187,3 @@ merged_buff_sf_half_diam <- sf::st_buffer(x = veg_merged_stems_sf
 sf::st_write(obj = merged_buff_sf_half_diam
              ,dsn = "data/data_output/veg_polygons_half_diam.shp"
              ,delete_dsn = TRUE)
-
-
-  
-  

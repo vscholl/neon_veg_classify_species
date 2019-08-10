@@ -91,7 +91,28 @@ tree_count <- rbind(tree_counts
                     ,data.frame(count = c(nrow(veg_multibole_removed))
       ,description = c(" entries remain after removing multi-bole entries")))
 
+# Convert the data frame to an SF object 
+veg_multibole_removed_sf <- sf::st_as_sf(veg_multibole_removed
+                                         ,coords = c("easting", "northing")
+                                         ,crs = coord_ref)
 
-# Apply area threshold to remove small polygons 
+# Create circular polygons with diamter = maximum crown diameter 
+veg_multibole_removed_buff <- sf::st_buffer(veg_multibole_removed_sf
+                    ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/2)
+                              ,digits = 1))
+
+# Create circular polygons with diamter = 1/2 maximum crown diameter 
+veg_multibole_removed_buff_half_diam <- sf::st_buffer(veg_multibole_removed_sf
+                      ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/4)
+                                                          ,digits = 1))
+
+# Apply area threshold to remove small polygons ---------------------------
+
+# Define the area threshold in units of [m^2]
+
+
+
+
 
 # Clip shorter polygons with taller polygons 
+
