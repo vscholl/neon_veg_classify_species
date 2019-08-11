@@ -38,58 +38,69 @@
 # from the analysis. This prevents duplicate polygons being used to extract 
 # spectra. 
 
-# List all individual ID strings 
-ind_IDs_all <- as.character(unique(droplevels(veg_merged$individualID)))
-
-# Split each individual ID using a period delimiter
-last_id_section <- sapply(stringr::str_split(ind_IDs_all, "[.]"), tail, 1)
-
-# Create another list without any letters
-last_digits <- gsub("[^0-9]", "", last_id_section)
-
-# Create a boolean vector where bole entries (which contain letters)
-# are True, but stem entries (without letters) are False 
-is_bole <- last_id_section != last_digits
-
-# Create a lookup table with the id information
-id_lut <- as.data.frame(last_digits) %>% 
-  dplyr::mutate(individualIDs_all = ind_IDs_all
-                ,last_id_section = last_id_section
-                ,is_bole = is_bole
-                ,height = veg_merged$height
-                ,maxCrownDiameter = veg_merged$maxCrownDiameter)
-
-# Count the frequency of each ID number. Identify the ID's with more than 
-# one entry. 
-multiple_ids <- as.data.frame(table(last_digits)) %>% 
-  dplyr::filter(Freq >1)
-
-# Create a list to populate with individualIDs to remove
-remove_ids <- c()
-
-# loop through the ID's that appear more than once in the data set
-for(id in as.character(multiple_ids$last_digits)){
+remove_multibole <- function(df){
   
-  # get the complete individual IDs 
-  duplicates <- print(id_lut[id_lut$last_digits == id,])
+  # List all individual ID strings 
+  ind_IDs_all <- as.character(unique(droplevels(df$individualID)))
   
-  # see if the height and diameter values are identical 
-  if(var(duplicates$height)==0 && var(duplicates$maxCrownDiameter) == 0){
-    remove_ids <- c(remove_ids, 
-                    duplicates$individualIDs_all[duplicates$is_bole==TRUE])
+  # Split each individual ID using a period delimiter
+  last_id_section <- sapply(stringr::str_split(ind_IDs_all, "[.]"), tail, 1)
+  
+  # Create another list without any letters
+  last_digits <- gsub("[^0-9]", "", last_id_section)
+  
+  # Create a boolean vector where bole entries (which contain letters)
+  # are True, but stem entries (without letters) are False 
+  is_bole <- last_id_section != last_digits
+  
+  # Create a lookup table with the id information
+  id_lut <- as.data.frame(last_digits) %>% 
+    dplyr::mutate(individualIDs_all = ind_IDs_all
+                  ,last_id_section = last_id_section
+                  ,is_bole = is_bole
+                  ,height = df$height
+                  ,maxCrownDiameter = df$maxCrownDiameter)
+  
+  # Count the frequency of each ID number. Identify the ID's with more than 
+  # one entry. 
+  multiple_ids <- as.data.frame(table(last_digits)) %>% 
+    dplyr::filter(Freq >1)
+  
+  # Create a list to populate with individualIDs to remove
+  remove_ids <- c()
+  
+  # loop through the ID's that appear more than once in the data set
+  for(id in as.character(multiple_ids$last_digits)){
+    
+    # get the complete individual IDs 
+    duplicates <- print(id_lut[id_lut$last_digits == id,])
+    
+    # see if the height and diameter values are identical 
+    if(var(duplicates$height)==0 && var(duplicates$maxCrownDiameter) == 0){
+      remove_ids <- c(remove_ids, 
+                      duplicates$individualIDs_all[duplicates$is_bole==TRUE])
+    }
+    
   }
+  
+  # Remove the entries with the multi-bole individualIDs identified in the 
+  # previous step. 
+  multibole_removed <- df %>% 
+    dplyr::filter(!(individualID %in% remove_ids))
+  
+  return(multibole_removed)
   
 }
 
-# Remove the entries with the multi-bole individualIDs identified in the 
-# previous step. 
-veg_multibole_removed <- veg_merged %>% 
-  dplyr::filter(!(individualID %in% remove_ids))
+# Remove multibole entries from the merged woody veg data frame 
+veg_multibole_removed <- remove_multibole(df = veg_merged)
+
 
 # Count how many trees are left after removing multi-bole entries
 tree_count <- rbind(tree_counts
                     ,data.frame(count = c(nrow(veg_multibole_removed))
       ,description = c(" entries remain after removing multi-bole entries")))
+
 
 # Convert the data frame to an SF object 
 veg_multibole_removed_sf <- sf::st_as_sf(veg_multibole_removed
@@ -97,20 +108,28 @@ veg_multibole_removed_sf <- sf::st_as_sf(veg_multibole_removed
                                          ,crs = coord_ref)
 
 # Create circular polygons with diamter = maximum crown diameter 
-veg_multibole_removed_buff <- sf::st_buffer(veg_multibole_removed_sf
+polygons_multibole_removed <- sf::st_buffer(veg_multibole_removed_sf
                     ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/2)
                               ,digits = 1))
 
-# Create circular polygons with diamter = 1/2 maximum crown diameter 
-veg_multibole_removed_buff_half_diam <- sf::st_buffer(veg_multibole_removed_sf
-                      ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/4)
-                                                          ,digits = 1))
+
+
 
 # Apply area threshold to remove small polygons ---------------------------
 
 # Define the area threshold in units of [m^2]
+# Start with the area of RGB pixel, 10cm by 10cm
+px_area_rgb <- 0.1 * 0.1 #[m^2]
+# Gridded LiDAR products and HS pixels are 1m x 1m
+px_area_hs <- 100 * px_area_rgb #[m^2]
+# Multiply area of 1 HS pixel by the number of pixels; 4 in this case 
+px_thresh <- 4
+thresh <- px_area_hs * px_thresh #[m^2]
 
-
+# Remove polygons with area < 4 hyperspectral pixels 
+polygons_thresh <- polygons_multibole_removed %>% 
+  dplyr::mutate(area_m2 = sf::st_area(polygons_multibole_removed)) %>% 
+  dplyr::filter(as.numeric(area_m2) > thresh)
 
 
 
