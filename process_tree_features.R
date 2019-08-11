@@ -133,5 +133,19 @@ polygons_thresh <- polygons_multibole_removed %>%
 
 
 
-# Clip shorter polygons with taller polygons 
-polygons_clipped <- clip_overlap(polygons_thresh)
+# Clip shorter polygons with taller polygons -----------------------------
+
+polygons_clipped <- clip_overlap(polygons_thresh, thresh)
+
+
+
+# Select one polygon, separate it from the rest of the polygons 
+p1 <- polygons_thresh %>% dplyr::slice(i)
+p_others <- polygons_thresh %>% dplyr::slice(-i)
+# Check if polygon intersects with any other polygons 
+p_intersects <- sf::st_intersection(sf::st_as_sf(p_others), p1)
+for(o in 1:nrow(p_intersects)){
+  print(o)
+  
+}
+

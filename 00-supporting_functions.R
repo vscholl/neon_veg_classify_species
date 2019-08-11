@@ -41,7 +41,39 @@ list_tiles_with_veg <- function(veg_df, out_dir){
 }
 
 
-clip_overlap <- function(df, nPix, shp_filename){
+get_poly = function(spdf, index_type, number){
+  # this fuction extracts a single polygon inside a SpatialPolygonsDataFrame 
+  # object based on its individual ID OR index in the data frame for testing
+  # index_type should be either "id" or "index"
+  # if index_type == id, then search for matching entry with that individualID
+  # if index_type == index, then it use number as an index into data frame
+  
+  if(index_type=='id'){ # use number as individual ID 
+    i <- which(spdf$individualID == number)
+  } else { # use number as index
+    i <- number
+  }
+  
+  coords = spdf@polygons[[i]]@Polygons[[1]]@coords
+  extra_data = as.data.frame(spdf@data[spdf@data$individualID == spdf$individualID[i],], 
+                             row.names = as.character(spdf$individualID[i]))
+  
+  # create SpatialPolygons
+  P1 = Polygon(coords)
+  Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = spdf$individualID[i])), 
+                        proj4string=spdf@proj4string)
+  
+  # create SpatialPolygonsDataFrame
+  Ps1 = SpatialPolygonsDataFrame(Ps1, 
+                                 data = extra_data, match.ID = TRUE)
+  return(Ps1)
+  
+}
+
+
+
+
+clip_overlap <- function(df, thresh){
   # Each polygon will be compared with the rest to determine which ones are 
   # overlapping. For each overlapping pair, the taller polygon clips the 
   # shorter one. If the clipped polygon is smaller than the specified area 
@@ -54,11 +86,7 @@ clip_overlap <- function(df, nPix, shp_filename){
   #   thresh
   #     (integer) Area [m^2] threshold to remove small polygons. 
   #
-  #   shp_filename
-  #     (character string) contianing the path and file name to write the final
-  #     polygons to file. 
-  #
-  #
+
   
   message("\nChecking for overlap & clipping shorter polygons...")
   
@@ -81,6 +109,8 @@ clip_overlap <- function(df, nPix, shp_filename){
   
   for (individualID in as.character(polys_ordered@data$individualID)){
     
+    print(individualID)
+    
     # if this polygon was removed from the polys_filtered
     # data frame in a previous iteration, skip it 
     if(sum(polys_filtered$individualID==individualID) == 0){
@@ -97,6 +127,9 @@ clip_overlap <- function(df, nPix, shp_filename){
     
     if(n_overlap>0){ 
       for (o in 1:n_overlap){
+        
+        print("o")
+        print(o)
         
         # if current polygon ID is not in filtered set
         if(sum(polys_filtered$individualID==individualID) == 0){
@@ -146,14 +179,14 @@ clip_overlap <- function(df, nPix, shp_filename){
         
         # if the area of one of the polygons is equivalent to zero, delete it and 
         # skip to the next overlapping polygon. 
-        if(current_poly@polygons[[1]]@area < 0.5){
+        if(current_poly@polygons[[1]]@area < 0.01){
           
           # delete the current polygon from the polygons_filtered data frame. 
           polys_filtered <- polys_filtered[polys_filtered$individualID!=current_poly$individualID,]
           
           next
           
-        } else if(test_poly@polygons[[1]]@area < 0.5){
+        } else if(test_poly@polygons[[1]]@area < 0.01){
           # delete the test polygon from the polygons_filtered data frame if its
           # area is essentially 0 (using the criterion < 0.5 here). This step 
           # was added for instances where after clipping, a small edge fragment remains.
@@ -210,7 +243,7 @@ clip_overlap <- function(df, nPix, shp_filename){
           # or equal to the area threshold, replace it as the polygon 
           # geometry for the entry matching the test individualID in the 
           # polygons_filtered data frame. 
-          if(clipped@polygons[[1]]@area * 10000 >= thresh){
+          if(clipped@polygons[[1]]@area  >= thresh){
             
             # replace the original polygon with the clipped polygon
             polys_filtered@polygons[[j]] <- clipped_geom@polygons[[1]]
@@ -227,11 +260,11 @@ clip_overlap <- function(df, nPix, shp_filename){
   }
   
   # write final polygons to file after checking for overlap
-  writeOGR(polys_filtered, getwd(),
-           paste(shp_filename),
-           driver="ESRI Shapefile", overwrite_layer = TRUE)
+  #writeOGR(polys_filtered, getwd(),
+  #         paste(shp_filename),
+  #         driver="ESRI Shapefile", overwrite_layer = TRUE)
   
-  return(polys_filtered)
+  return(sf::st_as_sf(polys_filtered))
   
 }
 
