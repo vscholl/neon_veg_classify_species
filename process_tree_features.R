@@ -134,4 +134,4 @@ polygons_thresh <- polygons_multibole_removed %>%
 
 
 # Clip shorter polygons with taller polygons 
-
+polygons_clipped <- clip_overlap(polygons_thresh)
