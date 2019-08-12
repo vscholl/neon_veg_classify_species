@@ -99,6 +99,19 @@ neonUtilities::byTileAOP(
 
 
 
+# Download all data for a given site, year, data product ------------------
+
+# To download all AOP data for specified site, year, product 
+neonUtilities::byFileAOP(
+  dpID = dp_chm
+  ,site = site_code
+  ,year = data_year
+  ,check.size = TRUE
+  ,savepath = dir_out)
+
+
+
+
 # Looping through data product downloads ----------------------------------
 
 
