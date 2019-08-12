@@ -12,7 +12,7 @@
 
 # API call parameters 
 site_code <- "NIWO"        # four-digit NEON site code 
-data_year <- "2017"        # four-digit year YYYY 
+data_year <- "2017"        # four-digit year in character string "YYYY" 
 dir_out <- "data/data_raw" # top-level directory to save downloaded files
 buffer_val <- 5 #[m]       # integer buffer size around tree coordinates
 
