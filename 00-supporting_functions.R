@@ -59,12 +59,12 @@ get_poly = function(spdf, index_type, number){
                              row.names = as.character(spdf$individualID[i]))
   
   # create SpatialPolygons
-  P1 = Polygon(coords)
-  Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = spdf$individualID[i])), 
+  P1 = sp::Polygon(coords)
+  Ps1 = sp::SpatialPolygons(list(Polygons(list(P1), ID = spdf$individualID[i])), 
                         proj4string=spdf@proj4string)
   
   # create SpatialPolygonsDataFrame
-  Ps1 = SpatialPolygonsDataFrame(Ps1, 
+  Ps1 = sp::SpatialPolygonsDataFrame(Ps1, 
                                  data = extra_data, match.ID = TRUE)
   return(Ps1)
   

@@ -15,6 +15,10 @@ library(geoNEON)
 library(dplyr)
 library(stringr)
 library(sf)
+# following packages needed for the clip_overlap custom function
+library(sp) 
+library(raster)
+library(rgeos)
 
 # Load custom supporting functions 
 source("00-supporting_functions.R")
