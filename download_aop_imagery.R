@@ -1,7 +1,7 @@
 # This script downloads NEON AOP remote sensing data 
 # and prepares them to become descriptive features for species classification.
 
-
+library(neonUtiliies)
 
 # Download AOP data -------------------------------------------------------
 
