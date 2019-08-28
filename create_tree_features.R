@@ -4,9 +4,10 @@
 # About neonUtilities: https://www.neonscience.org/neonDataStackR
 # About geoNEON: https://github.com/NEONScience/NEON-geolocation/tree/master/geoNEON
 
-# Load necessary packages
+# Load necessary packages. 
+# If R says "Error in loadNamespace(name) : there is no package called 'packageName',
+# Use install.packages("package_name") unless otherwise specified. 
 library(neonUtilities) 
-  #install.packages("neonUtilities")
 library(geoNEON)
   #install.packages("devtools")
   #library(devtools)
