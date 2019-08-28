@@ -5,8 +5,12 @@
 # About geoNEON: https://github.com/NEONScience/NEON-geolocation/tree/master/geoNEON
 
 # Load necessary packages
-library(neonUtilities)
+library(neonUtilities) 
+  #install.packages("neonUtilities")
 library(geoNEON)
+  #install.packages("devtools")
+  #library(devtools)
+  #install_github('NEONScience/NEON-geolocation/geoNEON', dependencies=TRUE)
 library(dplyr)
 library(stringr)
 library(sf)
