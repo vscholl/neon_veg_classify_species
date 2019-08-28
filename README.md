@@ -20,3 +20,9 @@ In this script, processing steps are applied to the tree features generated usin
 At this point, this workflow has generated a collection of polygons that will theoretically intersect with independent pixels in the airborne remote sensing data.
 
 ### (3) download_aop_imagery
+
+
+#### VS-NOTE: 
+To do:
+- Check that the area threshold is properly applied in the clip_overlap step, since geometries are converted from SF to Spatial
+- Remove invalid geometries after clip_polygon based on the sf::is_valid logical result 
