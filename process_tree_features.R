@@ -144,6 +144,8 @@ tree_count <- rbind(tree_counts
           ,description = c(" entries remain after clipping overlapping regions")))
 
 # Check and fix/delete invalid geometries
+# VS-NOTE: or should invalid geometries be removed completely, such as if the reason
+# for invalidity is "Too few points in geometry component[453729.741 4433259.265]"
 polygons_clipped_is_valid <- sf::st_is_valid(x = polygons_clipped, reason = TRUE)
 polygons_clipped_valid <- lwgeom::st_make_valid(polygons_clipped)
 
