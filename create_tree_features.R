@@ -24,7 +24,17 @@ check_create_dir("data/data_raw")
 check_create_dir("data/data_output")
 
 
+# Let's load the in-situ Woody Vegetation Structure data straight into R.
+# Specify the NEON site and starting/ending date(s) for the data. 
+veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"   
+                                              ,site = "NIWO"              
+                                              ,startdate = "2016-01"      
+                                              #,enddate = "YYYY-MM"
+                                              ,package = "basic"          
+                                              ,check.size = T)
+
 # ------------------------------------------------------------------------
+# # Alternative option to loading data straight into R:
 # # Download the files locally from NEON API using the zipsByProduct function. 
 # # They will be stored within "data/data_raw/filesToStack#####" where "#####" 
 # # is the middle portion of the data product ID string. 
@@ -43,15 +53,6 @@ check_create_dir("data/data_output")
 # neonUtilities::stackByTable(filepath = "data/data_raw/filesToStack10098" 
 #                             ,folder = T)
 # ------------------------------------------------------------------------
-
-
-# Let's load the in-situ data straight into R
-veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"   
-                                              ,site = "NIWO"              
-                                              ,startdate = "2016-01"      
-                                              #,enddate = "YYYY-MM"
-                                              ,package = "basic"          
-                                              ,check.size = T)
 
 
 # mappingandtagging -----------------------------------------------------------
