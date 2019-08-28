@@ -143,9 +143,13 @@ tree_count <- rbind(tree_counts
                     ,data.frame(count = c(nrow(polygons_clipped))
           ,description = c(" entries remain after clipping overlapping regions")))
 
+# Check and fix/delete invalid geometries
+polygons_clipped_is_valid <- sf::st_is_valid(x = polygons_clipped, reason = TRUE)
+polygons_clipped_valid <- lwgeom::st_make_valid(polygons_clipped)
+
 
 # Write shapefile with clipped tree crown polygons
-sf::st_write(obj = polygons_clipped
+sf::st_write(obj = polygons_clipped_valid
              ,dsn = "data/data_output/veg_polys_clipped_overlap.shp"
              ,delete_dsn = TRUE)
 
