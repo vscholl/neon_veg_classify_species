@@ -208,12 +208,19 @@ clip_overlap <- function(df, thresh){
           clipped_geom <- rgeos::gDifference(test_poly, current_poly, 
                                              byid = TRUE, drop_lower_td = TRUE)
           
+          # if the clipped region is NULL, skip to the next polygon comparison.
+          if(is.null(clipped_geom)){
+            print("null clipped_geom")
+            next
+          } else{ 
+          
           # set the ID field to match the test polygon individualID
           clipped_geom@polygons[[1]]@ID <- as.character(test_poly$individualID)
           
           # get the index within the filtered polygons data frame 
           # where the test polygon belongs. 
           j <- which(polys_filtered@data$individualID == test_poly$individualID)
+        }
           
         } else{
           

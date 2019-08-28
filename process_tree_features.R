@@ -137,15 +137,16 @@ polygons_thresh <- polygons_multibole_removed %>%
 
 polygons_clipped <- clip_overlap(polygons_thresh, thresh)
 
+# Count how many trees are left after clipping areas of overlap and applying 
+# area threshold to clipped polygons
+tree_count <- rbind(tree_counts
+                    ,data.frame(count = c(nrow(polygons_clipped))
+          ,description = c(" entries remain after clipping overlapping regions")))
 
 
-# Select one polygon, separate it from the rest of the polygons 
-p1 <- polygons_thresh %>% dplyr::slice(i)
-p_others <- polygons_thresh %>% dplyr::slice(-i)
-# Check if polygon intersects with any other polygons 
-p_intersects <- sf::st_intersection(sf::st_as_sf(p_others), p1)
-for(o in 1:nrow(p_intersects)){
-  print(o)
-  
-}
+# Write shapefile with clipped tree crown polygons
+sf::st_write(obj = polygons_clipped
+             ,dsn = "data/data_output/veg_polys_clipped_overlap.shp"
+             ,delete_dsn = TRUE)
+
 
