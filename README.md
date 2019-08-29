@@ -3,7 +3,14 @@ My master's workflow to perform Random Forest classification using freely availa
 
 ## Getting started 
 
+### Packages to install
+
+
+
+### Workflow
+
 In RStudio, click the "neon_veg_classify_species.Rproj" file to open this R project.
+Run through the following scripts:
 
 ### (1) create_tree_features 
 This script downloads NEON woody vegetation data from the API and loads it directly into R. A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
