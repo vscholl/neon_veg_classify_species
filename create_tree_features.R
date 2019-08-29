@@ -31,6 +31,8 @@ check_create_dir("data/data_output")
 
 # Let's load the in-situ Woody Vegetation Structure data straight into R.
 # Specify the NEON site and starting/ending date(s) for the data. 
+# A message in the console will display the total file size to be downloaded.
+# Proceed by typing "y" and pressing Enter. 
 veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"   
                                               ,site = "NIWO"              
                                               ,startdate = "2016-01"      
