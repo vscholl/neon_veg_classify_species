@@ -38,60 +38,6 @@
 # from the analysis. This prevents duplicate polygons being used to extract 
 # spectra. 
 
-remove_multibole <- function(df){
-  
-  # List all individual ID strings 
-  ind_IDs_all <- as.character(unique(droplevels(df$individualID)))
-  
-  # Split each individual ID using a period delimiter
-  last_id_section <- sapply(stringr::str_split(ind_IDs_all, "[.]"), tail, 1)
-  
-  # Create another list without any letters
-  last_digits <- gsub("[^0-9]", "", last_id_section)
-  
-  # Create a boolean vector where bole entries (which contain letters)
-  # are True, but stem entries (without letters) are False 
-  is_bole <- last_id_section != last_digits
-  
-  # Create a lookup table with the id information
-  id_lut <- as.data.frame(last_digits) %>% 
-    dplyr::mutate(individualIDs_all = ind_IDs_all
-                  ,last_id_section = last_id_section
-                  ,is_bole = is_bole
-                  ,height = df$height
-                  ,maxCrownDiameter = df$maxCrownDiameter)
-  
-  # Count the frequency of each ID number. Identify the ID's with more than 
-  # one entry. 
-  multiple_ids <- as.data.frame(table(last_digits)) %>% 
-    dplyr::filter(Freq >1)
-  
-  # Create a list to populate with individualIDs to remove
-  remove_ids <- c()
-  
-  # loop through the ID's that appear more than once in the data set
-  for(id in as.character(multiple_ids$last_digits)){
-    
-    # get the complete individual IDs 
-    duplicates <- print(id_lut[id_lut$last_digits == id,])
-    
-    # see if the height and diameter values are identical 
-    if(var(duplicates$height)==0 && var(duplicates$maxCrownDiameter) == 0){
-      remove_ids <- c(remove_ids, 
-                      duplicates$individualIDs_all[duplicates$is_bole==TRUE])
-    }
-    
-  }
-  
-  # Remove the entries with the multi-bole individualIDs identified in the 
-  # previous step. 
-  multibole_removed <- df %>% 
-    dplyr::filter(!(individualID %in% remove_ids))
-  
-  return(multibole_removed)
-  
-}
-
 # Remove multibole entries from the merged woody veg data frame 
 veg_multibole_removed <- remove_multibole(df = veg_merged)
 
