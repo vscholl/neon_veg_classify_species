@@ -163,7 +163,7 @@ clip_overlap <- function(df, thresh){
   
   for (individualID in as.character(polys_ordered@data$individualID)){
     
-    print(individualID)
+    #print(individualID)
     
     # if this polygon was removed from the polys_filtered
     # data frame in a previous iteration, skip it 
@@ -182,8 +182,8 @@ clip_overlap <- function(df, thresh){
     if(n_overlap>0){ 
       for (o in 1:n_overlap){
         
-        print("o")
-        print(o)
+        #print("o")
+        #print(o)
         
         # if current polygon ID is not in filtered set
         if(sum(polys_filtered$individualID==individualID) == 0){
@@ -264,7 +264,7 @@ clip_overlap <- function(df, thresh){
           
           # if the clipped region is NULL, skip to the next polygon comparison.
           if(is.null(clipped_geom)){
-            print("null clipped_geom")
+            #print("null clipped_geom")
             next
           } else{ 
           
