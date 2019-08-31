@@ -403,6 +403,5 @@ move_downloaded_files <- function(dir_out, dp_id, dp_name, file_pattern, delete_
     }
   }
   
-  
   print(paste("Downloaded files moved from", download_path, "to",move_dir))
 }

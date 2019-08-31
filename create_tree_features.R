@@ -1,32 +1,5 @@
 # This script downloads NEON woody vegetation data from the API and loads 
 # it directly into R. 
-# 
-# About neonUtilities: https://www.neonscience.org/neonDataStackR
-# About geoNEON: https://github.com/NEONScience/NEON-geolocation/tree/master/geoNEON
-
-# Load necessary packages. 
-# If R says "Error in loadNamespace(name) : there is no package called 'packageName',
-# Use install.packages("package_name") unless otherwise specified. 
-library(neonUtilities) 
-library(geoNEON)
-  #install.packages("devtools")
-  #library(devtools)
-  #install_github('NEONScience/NEON-geolocation/geoNEON', dependencies=TRUE)
-library(dplyr)
-library(stringr)
-library(sf)
-# following packages needed for the clip_overlap custom function
-library(sp) 
-library(raster)
-library(rgeos)
-
-# Load custom supporting functions 
-source("00-supporting_functions.R")
-
-# Create folders to store the raw and processed data
-check_create_dir("data")
-check_create_dir("data/data_raw")
-check_create_dir("data/data_output")
 
 
 # Let's load the in-situ Woody Vegetation Structure data straight into R.
@@ -34,7 +7,7 @@ check_create_dir("data/data_output")
 # A message in the console will display the total file size to be downloaded.
 # Proceed by typing "y" and pressing Enter. 
 veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"   
-                                              ,site = "NIWO"              
+                                              ,site = site_code              
                                               ,startdate = "2016-01"      
                                               #,enddate = "YYYY-MM"
                                               ,package = "basic"          

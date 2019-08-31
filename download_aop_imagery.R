@@ -5,7 +5,6 @@
 # data product ID. This script also moves the downloaded files into
 # data_raw/SITE_YEAR/ to more easily find the data later. 
 
-library(neonUtilities)
 
 # Download AOP data -------------------------------------------------------
 
