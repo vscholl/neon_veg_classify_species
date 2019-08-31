@@ -99,7 +99,8 @@ neonUtilities::byTileAOP(
   ,buffer = buffer_val)
 
 move_downloaded_files(dir_out = dir_out, dp_id = dp_veg_indices
-                      ,dp_name = "veg_indices", file_pattern = "*VegIndices.zip$"
+                      ,dp_name = "veg_indices"
+                      ,file_pattern = "*VegIndices.zip$"
                       ,delete_orig = TRUE, unzip = TRUE)
 
 
@@ -118,7 +119,10 @@ neonUtilities::byTileAOP(
   ,buffer = buffer_val)
 
 
-
+move_downloaded_files(dir_out = dir_out, dp_id = dp_hs_refl
+                      ,dp_name = "hyperspectral"
+                      ,file_pattern = "*reflectance.h5$"
+                      ,delete_orig = TRUE)
 
 
 
@@ -128,19 +132,17 @@ neonUtilities::byTileAOP(
 # Download all data for a given site, year, data product ------------------
 
 # To download all AOP data for specified site, year, product 
-neonUtilities::byFileAOP(
-  dpID = dp_chm
-  ,site = site_code
-  ,year = data_year
-  ,check.size = TRUE
-  ,savepath = dir_out)
+#neonUtilities::byFileAOP(
+#  dpID = dp_chm
+#  ,site = site_code
+#  ,year = data_year
+#  ,check.size = TRUE
+#  ,savepath = dir_out)
 
 
 
 
 # Looping through data product downloads ----------------------------------
-
-
 
 # List of Data Product IDs to download
 # "DP3.30015.001" - "chm"               LiDAR-derived Canopy Height Model
@@ -181,55 +183,3 @@ for (i in nrow(data_products)){
     ,buffer = buffer_val)
   
 } 
-
-
-
-
-# Move downloaded AOP data ------------------------------------------------
-
-# move the files intuituve folder name.
-# For example, the default nested directories where RGB data is stored: 
-#   "data/data_raw/DP3.30010.001/2017/FullSite/D13/2017_NIWO_1/L3/Camera/Mosaic/V01/2017_NIWO_1_453000_4433000_image.tif"
-# to a simpler directory structure:
-#   "data/data_raw/rgb/2017_NIWO_1_453000_4433000_image.tif"
-# mainly for convenience if the user wants to quickly locate the AOP
-# files for creating maps later.
-
-
-# DP3.30010.001  high-resolution RGB multispectral imagery
-neonUtilities::byTileAOP(
-  dp_id = "DP3.30010.001"
-  ,site = "NIWO"
-  ,year = "2017"
-  ,savepath = "data/data_raw"
-  ,easting = veg_coordinates$eastings
-  ,northing = veg_coordinates$northings
-  ,buffer = 5)
-
-# list all image filenames 
-rgb_download_path <- "data/data_raw/DP3.30010.001"
-list_rgb_files <- list.files(path = rgb_download_path
-                             ,pattern = "*.tif$"
-                             ,recursive = TRUE
-                             ,full.names = TRUE)
-
-# move rgb .tif images into a new folder called "rgb"
-rgb_dir <- "data/data_raw/rgb"
-check_create_dir(rgb_dir)
-files_from <- list_rgb_files
-files_to <- paste(rgb_dir
-                  ,sapply(stringr::str_split(list_rgb_files
-                                             ,.Platform$file.sep)
-                          ,tail, 1)
-                  ,sep = .Platform$file.sep)
-# copy the downloaded files into the simplified directory
-file.copy(from = files_from
-          ,to = files_to
-          ,overwrite = TRUE)
-# If the copy was successful, delete original files in the nested directories 
-if(all(file.exists(files_to))){
-  unlink(rgb_download_path
-         ,recursive = TRUE)
-}
-
-
