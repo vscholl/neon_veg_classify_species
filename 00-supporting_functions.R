@@ -329,3 +329,80 @@ clip_overlap <- function(df, thresh){
   
 }
 
+
+move_downloaded_files <- function(dir_out, dp_id, dp_name, file_pattern, delete_orig = FALSE, unzip = FALSE){
+  # moves AOP files downloaded using the neonUtilities::byTileAOP
+  # function into a folder with an intuitive name for each 
+  # remote sensing data type. 
+  # 
+  # Args
+  #   dir_out - character string path to the main directory where
+  #             files were downloaded.
+  #             example: "data/data_raw/NIWO_2017
+  #
+  #   dp_id - character string with the data product ID 
+  #          example: "DP3.30015.001" for the Canopy Height Model
+  #
+  #   dp_name - character string with a short name describing the data 
+  #            this is the folder name where the files will be moved. 
+  #            example: "chm" for Canopy Height Model 
+  # 
+  #   file_pattern - character string used to identify downloaded files 
+  #                  that will be moved by this function. 
+  #                  example: "*CHM.tif$" for Canopy Height Model tiles
+  #                           that include CHM and end with a .tif extension
+  # 
+  #   delete_orig - optional logical parameter to delete the original 
+  #                 downloaded files. Default value of FALSE 
+  # 
+  #   unzip - optional logical parameter to unxip the downloaded files
+  #           after they have been moved. Deafult value of FALSE. 
+  # 
+  # Example function call: 
+  # move_downloaded_files(dir_out = "data/data_raw/NIWO_2017"
+  #                       ,dp_id = "DP3.30026.001"
+  #                       ,dp_name = "veg_indices"
+  #                       ,file_pattern = "*VegIndices.zip$"
+  #                       ,delete_orig = TRUE
+  #                       ,unzip = TRUE)
+  
+  
+  # list all filenames 
+  download_path <- file.path(dir_out, dp_id)
+  list_files <- list.files(path = download_path
+                           ,pattern = file_pattern
+                           ,recursive = TRUE
+                           ,full.names = TRUE)
+  
+  # move files into a new folder with an intuitive name
+  move_dir <- file.path(dir_out, dp_name)
+  check_create_dir(move_dir)
+  files_from <- list_files
+  files_to <- paste(move_dir
+                    ,sapply(stringr::str_split(list_files
+                                               ,.Platform$file.sep)
+                            ,tail, 1)
+                    ,sep = .Platform$file.sep)
+  # copy the downloaded files into the simplified directory
+  file.copy(from = files_from
+            ,to = files_to
+            ,overwrite = TRUE)
+  
+  # If the copy was successful, delete original files in the nested directories
+  if(delete_orig){
+    if(all(file.exists(files_to))){
+      unlink(download_path
+             ,recursive = TRUE)
+    }
+  }
+  
+  # Unzip compressed files 
+  if(unzip){
+    for(zipFile in files_to){
+      utils::unzip(zipFile, exdir = move_dir)
+    }
+  }
+  
+  
+  print(paste("Downloaded files moved from", download_path, "to",move_dir))
+}

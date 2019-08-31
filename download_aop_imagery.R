@@ -1,7 +1,11 @@
 # This script downloads NEON AOP remote sensing data 
-# and prepares them to become descriptive features for species classification.
+# that will become descriptive features for species classification.
+#
+# Each data product is downloaded to a folder named by its 
+# data product ID. This script also moves the downloaded files into
+# data_raw/SITE_YEAR/ to more easily find the data later. 
 
-library(neonUtiliies)
+library(neonUtilities)
 
 # Download AOP data -------------------------------------------------------
 
@@ -13,10 +17,11 @@ library(neonUtiliies)
 # API call parameters 
 site_code <- "NIWO"        # four-digit NEON site code 
 data_year <- "2017"        # four-digit year in character string "YYYY" 
-dir_out <- "data/data_raw" # top-level directory to save downloaded files
+# output directory to store downloaded AOP data with site code and year 
+dir_out <- file.path("data", "data_raw", paste(site_code, data_year, sep = "_")) # top-level directory to save downloaded files
 buffer_val <- 5 #[m]       # integer buffer size around tree coordinates
 
-
+check_create_dir(dir_out)
 
 
 # CHM ---------------------------------------------------------------------
@@ -32,6 +37,10 @@ neonUtilities::byTileAOP(
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
+# move CHM files
+move_downloaded_files(dir_out = dir_out, dp_id = dp_chm
+                     ,dp_name = "chm", file_pattern = "*CHM.tif$")
+
 
 # aspect_slope ------------------------------------------------------------
 
@@ -46,6 +55,15 @@ neonUtilities::byTileAOP(
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
+# move aspect files
+move_downloaded_files(dir_out = dir_out, dp_id = dp_aspect_slope
+                      ,dp_name = "aspect", file_pattern = "*aspect.tif$"
+                      ,delete_orig = FALSE)
+
+# move slope files; delete originally downloaded aspect and slope files 
+move_downloaded_files(dir_out = dir_out, dp_id = dp_aspect_slope
+                      ,dp_name = "slope", file_pattern = "*slope.tif$"
+                      ,delete_orig = TRUE)
 
 
 # RGB ---------------------------------------------------------------------
@@ -61,6 +79,10 @@ neonUtilities::byTileAOP(
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
+# move rgb files
+move_downloaded_files(dir_out = dir_out, dp_id = dp_rgb
+                      ,dp_name = "rgb", file_pattern = "*image.tif$"
+                      ,delete_orig = TRUE)
 
 
 # Vegetation indices ------------------------------------------------------
@@ -75,6 +97,10 @@ neonUtilities::byTileAOP(
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
+
+move_downloaded_files(dir_out = dir_out, dp_id = dp_veg_indices
+                      ,dp_name = "veg_indices", file_pattern = "*VegIndices.zip$"
+                      ,delete_orig = TRUE, unzip = TRUE)
 
 
 
