@@ -30,8 +30,8 @@ At this point, this workflow has generated a collection of polygons that will th
 
 This script downloads selected NEON Airborne Observation Platform (AOP) remote sensing mosaic data product tiles for the site and year of interest (saved to the following directory in the project: "data/data_raw/SITE_YEAR"). Each one is downloaded to a deeply nested subdirectory structure in a top folder named with the data product ID (i.e. "DP3.30006.001"). Each set of files are moved into a folder with a short intuitive pathname (i.e. "data/data_raw/SITE_YEAR/hyperspectral")). 
 
-| :Data Product Name                                    | Data Product ID |
-| ---                                                   | ---             |
+| Data Product Name                                    | Data Product ID |
+| :---                                                   | ---             |
 | Ecosystem Structure (Canopy Height Model)             | DP3.30015.001   |
 | Slope and Aspect - LiDAR                              | DP3.30025.001   |
 | High-resolution orthorectified camera imagery  | DP3.30010.001   |
