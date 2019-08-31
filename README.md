@@ -12,10 +12,13 @@ My master's workflow to perform Random Forest classification using freely availa
 In RStudio, click the "neon_veg_classify_species.Rproj" file to open this R project.
 Run through the following scripts:
 
-### (1) create_tree_features 
+### 01-main.R
+Install packages and define parameters for the other scripts. 
+
+### 02-create_tree_features.R 
 This script downloads NEON woody vegetation data from the API and loads it directly into R. A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
 
-### (2) process_tree_features
+### 03-process_tree_features.R
 In this script, processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data: 
 
 1. Identical multi-bole entries are identified and excluded from subsequent analysis to remove duplicated points or polygons present in the raw data set. 
@@ -26,7 +29,7 @@ In this script, processing steps are applied to the tree features generated usin
 
 At this point, this workflow has generated a collection of polygons that will theoretically intersect with independent pixels in the airborne remote sensing data.
 
-### (3) download_aop_imagery
+### 04-download_aop_imagery.R
 
 This script downloads selected NEON Airborne Observation Platform (AOP) remote sensing mosaic data product tiles for the site and year of interest (saved to the following directory in the project: "data/data_raw/SITE_YEAR"). Each one is downloaded to a deeply nested subdirectory structure in a top folder named with the data product ID (i.e. "DP3.30006.001"). Each set of files are moved into a folder with a short intuitive pathname (i.e. "data/data_raw/SITE_YEAR/hyperspectral")). 
 
@@ -37,6 +40,9 @@ This script downloads selected NEON Airborne Observation Platform (AOP) remote s
 | High-resolution orthorectified camera imagery  | DP3.30010.001   |
 | Vegetation Indices - spectrometer - mosaic            | DP3.30026.001   |
 | Spectrometer orthorectified surface directional reflectance | DP3.30006.001| 
+
+### 05-prep-aop-imagery.R 
+
 
 
 #### VS-NOTE: 
