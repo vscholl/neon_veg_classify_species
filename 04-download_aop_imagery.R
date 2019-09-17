@@ -13,16 +13,6 @@
 # the tree locations from the woody vegetation structure data. 
 
 
-# API call parameters 
-site_code <- "NIWO"        # four-digit NEON site code 
-data_year <- "2017"        # four-digit year in character string "YYYY" 
-# output directory to store downloaded AOP data with site code and year 
-dir_out <- file.path("data", "data_raw", paste(site_code, data_year, sep = "_")) # top-level directory to save downloaded files
-buffer_val <- 5 #[m]       # integer buffer size around tree coordinates
-
-check_create_dir(dir_out)
-
-
 # CHM ---------------------------------------------------------------------
 
 dp_chm <- "DP3.30015.001"
@@ -31,13 +21,13 @@ neonUtilities::byTileAOP(
   dpID = dp_chm
   ,site = site_code
   ,year = data_year
-  ,savepath = dir_out
+  ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
 # move CHM files
-move_downloaded_files(dir_out = dir_out, dp_id = dp_chm
+move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_chm
                      ,dp_name = "chm", file_pattern = "*CHM.tif$")
 
 
@@ -49,18 +39,18 @@ neonUtilities::byTileAOP(
   dpID = dp_aspect_slope
   ,site = site_code
   ,year = data_year
-  ,savepath = dir_out
+  ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
 # move aspect files
-move_downloaded_files(dir_out = dir_out, dp_id = dp_aspect_slope
+move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_aspect_slope
                       ,dp_name = "aspect", file_pattern = "*aspect.tif$"
                       ,delete_orig = FALSE)
 
 # move slope files; delete originally downloaded aspect and slope files 
-move_downloaded_files(dir_out = dir_out, dp_id = dp_aspect_slope
+move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_aspect_slope
                       ,dp_name = "slope", file_pattern = "*slope.tif$"
                       ,delete_orig = TRUE)
 
@@ -73,13 +63,13 @@ neonUtilities::byTileAOP(
   dpID = dp_rgb
   ,site = site_code
   ,year = data_year
-  ,savepath = dir_out
+  ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
 # move rgb files
-move_downloaded_files(dir_out = dir_out, dp_id = dp_rgb
+move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_rgb
                       ,dp_name = "rgb", file_pattern = "*image.tif$"
                       ,delete_orig = TRUE)
 
@@ -92,12 +82,12 @@ neonUtilities::byTileAOP(
   dpID = dp_veg_indices
   ,site = site_code
   ,year = data_year
-  ,savepath = dir_out
+  ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
-move_downloaded_files(dir_out = dir_out, dp_id = dp_veg_indices
+move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_veg_indices
                       ,dp_name = "veg_indices"
                       ,file_pattern = "*VegIndices.zip$"
                       ,delete_orig = TRUE, unzip = TRUE)
@@ -112,13 +102,13 @@ neonUtilities::byTileAOP(
   dpID = dp_hs_refl
   ,site = site_code
   ,year = data_year
-  ,savepath = dir_out
+  ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
   ,buffer = buffer_val)
 
 
-move_downloaded_files(dir_out = dir_out, dp_id = dp_hs_refl
+move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_hs_refl
                       ,dp_name = "hyperspectral"
                       ,file_pattern = "*reflectance.h5$"
                       ,delete_orig = TRUE)
@@ -136,7 +126,7 @@ move_downloaded_files(dir_out = dir_out, dp_id = dp_hs_refl
 #  ,site = site_code
 #  ,year = data_year
 #  ,check.size = TRUE
-#  ,savepath = dir_out)
+#  ,savepath = dir_data_raw)
 
 
 
@@ -176,7 +166,7 @@ for (i in nrow(data_products)){
     dp_id = dp_id
     ,site = site_code
     ,year = data_year
-    ,savepath = dir_out
+    ,savepath = dir_data_raw
     ,easting = veg_coordinates$eastings
     ,northing = veg_coordinates$northings
     ,buffer = buffer_val)

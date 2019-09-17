@@ -101,7 +101,7 @@ tree_counts <- rbind(tree_counts, data.frame(count = c(nrow(veg_merged))
 
 
 # Write merged mappingandtagging and apparentindividual entries to csv
-write.csv(veg_merged, file = "data/data_output/vst_merged.csv")
+write.csv(veg_merged, file = file.path(dir_data_out, "vst_merged.csv"))
 
 
 # Get a list of unique easting, northing coordinates of mapped stems. 
@@ -114,7 +114,7 @@ veg_coordinates <- data.frame(eastings = veg_merged$easting,
 # Generate a list of tiles if instead you decide to download manually from 
 # the NEON Data portal. A text file is written with tile coordinates. 
 tiles <- list_tiles_with_veg(veg_df = veg_merged
-                            ,out_dir = "data/data_raw/")
+                            ,out_dir = dir_data_raw)
 
 
 # Create point and polygon features for each woody vegetation individual ------
@@ -135,7 +135,7 @@ mapped_stems_sf <- sf::st_as_sf(x = veg_utm
                              ,coords = c("easting", "northing")
                              ,crs = coord_ref)
 sf::st_write(obj = mapped_stems_sf
-             ,dsn = "data/data_output/veg_points_all.shp"
+             ,dsn = file.path(dir_data_out, "veg_points_all.shp")
              ,delete_dsn = TRUE)
 
 # plot all mapped stem locations
@@ -149,7 +149,7 @@ veg_merged_stems_sf <- sf::st_as_sf(x = veg_merged
                                 ,coords = c("easting", "northing")
                                 ,crs = coord_ref)
 sf::st_write(obj = veg_merged_stems_sf
-             ,dsn = "data/data_output/veg_points_w_height_diam.shp"
+             ,dsn = file.path(dir_data_out, "veg_points_w_height_diam.shp")
              ,delete_dsn = TRUE)
 
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
@@ -159,7 +159,7 @@ merged_buff_sf <- sf::st_buffer(x = veg_merged_stems_sf
                                 ,dist = round((veg_merged_stems_sf$maxCrownDiameter/2)
                                               ,digits = 1))
 sf::st_write(obj = merged_buff_sf
-             ,dsn = "data/data_output/veg_polygons_max_diam.shp"
+             ,dsn = file.path(dir_data_out, "veg_polygons_max_diam.shp")
              ,delete_dsn = TRUE)
 
 
@@ -170,5 +170,5 @@ sf::st_write(obj = merged_buff_sf
 #                                 ,dist = round((merged_stems_sf$maxCrownDiameter/4)
 #                                               ,digits = 1))
 # sf::st_write(obj = merged_buff_sf_half_diam
-#              ,dsn = "data/data_output/veg_polygons_half_diam.shp"
+#              ,dsn = file.path(dir_data_out, "veg_polygons_half_diam.shp")
 #              ,delete_dsn = TRUE)

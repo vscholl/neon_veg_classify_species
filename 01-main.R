@@ -25,10 +25,15 @@ source("00-supporting_functions.R")
 
 # Create folders to store the raw and processed data
 check_create_dir("data")
-check_create_dir("data/data_raw")
-check_create_dir("data/data_output")
+dir_data_raw <- file.path("data","data_raw")
+dir_data_out <- file.path("data","data_output")
+check_create_dir(dir_data_raw)
+check_create_dir(dir_data_out)
 
-# Define parameters
-site_code <- "NIWO"   # four-digit NEON site code 
-data_year <- "2017"   # four-digit year in character string "YYYY" for AOP imagery
-dir_out <- file.path("data", "data_raw", paste(site_code, data_year, sep = "_")) 
+# Define parameters for the in-situ woody plant vegetation data to download
+
+
+# Define parameters for the AOP remote sensing data to download
+site_code <- "NIWO"       # four-digit NEON site code 
+aop_data_year <- "2017"   # four-digit year in character string "YYYY" for AOP imagery
+buffer_val <- 5 #[m]       # integer buffer size around tree coordinates

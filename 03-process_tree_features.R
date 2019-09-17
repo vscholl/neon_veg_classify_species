@@ -98,8 +98,7 @@ polygons_clipped_is_valid <- sf::st_is_valid(x = polygons_clipped, reason = TRUE
 
 # Write shapefile with clipped tree crown polygons
 sf::st_write(obj = polygons_clipped
-             ,dsn = "data/data_output/veg_polys_clipped_overlap.shp"
+             ,dsn = file.path(dir_data_out, "veg_polys_clipped_overlap.shp")
              ,delete_dsn = TRUE)
 
-# 
 
