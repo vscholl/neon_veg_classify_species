@@ -22,13 +22,13 @@ Install packages and define parameters for the other scripts.
 This script downloads NEON woody vegetation data from the API and loads it directly into R. A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
 
 ### 3. Process tree features
-In this script, processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data: 
+In this script, processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data:
 
-1. Identical multi-bole entries are identified and excluded from subsequent analysis to remove duplicated points or polygons present in the raw data set. 
+1. Identical multi-bole entries are identified and excluded from subsequent analysis to remove duplicated points or polygons present in the raw data set.
 
-2. An area threshold is then applied to remove any small trees area values less than the area of four hyperspectral pixels. This threshold was selected with the coarser resolution of the hyperspectral and LiDAR data products in mind. By preserving the trees with larger crowns, it is believed that purer spectra will be extracted for them for the training data sets, as opposed to extracting mixed pixels which signal from smaller plants and background materials or neighboring vegetation. 
+2. An area threshold is applied to remove any small trees area values less than the area of four hyperspectral pixels.
 
-3. “Engulfed” polygons, those which are shorter and completely within the boundaries of other polygons, are also present in the initial crown polygons.Since they likely cannot be observed from the airborne perspective, “engulfed” polygons were removed from subsequent analysis. Remaining polygons were checked for overlap with neighboring polygons. For each overlapping pair of polygons, shorter polygons were clipped by taller ones. If the remaining clipped area was smaller than the aforementioned area threshold, it was deleted. 
+3. "Engulfed” polygons, those which are shorter and completely within the boundaries of other polygons, are removed from subsequent analysis Since they likely cannot be observed from the airborne perspective. Remaining polygons were checked for overlap with neighboring polygons. For each overlapping pair of polygons, shorter polygons were clipped by taller ones. If the remaining clipped area was smaller than the aforementioned area threshold, it was deleted. 
 
 At this point, this workflow has generated a collection of polygons that will theoretically intersect with independent pixels in the airborne remote sensing data.
 
