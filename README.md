@@ -19,10 +19,10 @@ Run through the following scripts:
 Install packages and define parameters for the other scripts. 
 
 ### 2. Create tree features
-This script downloads NEON woody vegetation data from the API and loads it directly into R. A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
+Download NEON woody vegetation data from the API and loads it directly into R. A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
 
 ### 3. Process tree features
-In this script, processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data:
+Processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data:
 
 1. Identical multi-bole entries are identified and excluded from subsequent analysis to remove duplicated points or polygons present in the raw data set.
 
@@ -34,7 +34,7 @@ At this point, this workflow has generated a collection of polygons that will th
 
 ### 4. Download AOP imagery
 
-This script downloads selected NEON Airborne Observation Platform (AOP) remote sensing mosaic data product tiles for the site and year of interest (saved to the following directory in the project: "data/data_raw/SITE_YEAR"). Each one is downloaded to a deeply nested subdirectory structure in a top folder named with the data product ID (i.e. "DP3.30006.001"). Each set of files are moved into a folder with a short intuitive pathname (i.e. "data/data_raw/SITE_YEAR/hyperspectral")). 
+Download selected NEON Airborne Observation Platform (AOP) remote sensing mosaic data product tiles for the site and year of interest (saved to the following directory in the project: "data/data_raw/SITE_YEAR"). Each data product is downloaded to a deeply nested subdirectory structure in a top folder named with the data product ID (i.e. "DP3.30006.001"). Each set of files are moved into a folder with a short intuitive pathname (i.e. "data/data_raw/SITE_YEAR/hyperspectral")). 
 
 | Data Product Name                                    | Data Product ID |
 | :---                                                   | ---             |
@@ -46,6 +46,7 @@ This script downloads selected NEON Airborne Observation Platform (AOP) remote s
 
 ### 5. Prep AOP imagery
 
+Read each of the remote sensing data products and stack them into a single data cube per tile. This includes an aggregation operation to bring the high-resolution camera imagery (10cm x 10cm grid) to the 1m x 1m grid as used by the other data products. 
 
 
 
