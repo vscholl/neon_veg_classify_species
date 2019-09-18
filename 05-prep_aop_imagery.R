@@ -135,7 +135,7 @@ for (h5 in h5_list) {
     # Aggregate red, green, blue intensity within each coarser grid cell using
     # statistics such as mean and standard deviation. 
     
-    rgb_features_filename <- file.path(paste0(rgb_dir, 
+    rgb_features_filename <- file.path(rgb_dir, paste0(
                               "rgb_features_",east_north_string, ".rds"))
     
     print(paste("rgb_features: ", rgb_features_filename))
