@@ -526,7 +526,7 @@ stack_hyperspectral <- function(h5, out_dir){
   # write wavelengths to a text file 
   # write the exact wavelengths to file for future use 
   write.table(data.frame(wavelengths = wavelengths),
-              file.path(out_dir,"wavelengths.txt")
+              file.path(out_dir,"wavelengths.txt"),
               row.names=FALSE)
   
   # return the stacked hyperspectral data to clip with vector files 

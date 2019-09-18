@@ -368,6 +368,12 @@ east_north_string <- "452000_4432000"
 stacked_aop_data_filename = file.path(stacked_aop_data_dir,
                                       paste0("stacked_aop_data_",
                                              east_north_string, ".rds"))
+
+# read the text file with wavelength data
+wavelengths = as.numeric(unlist(read.table(file.path(dir_data_out,
+                                                     "wavelengths.txt"),
+                                           skip = 1,
+                                           col.names = 'wavelength')))
   
 # read the stacked AOP data 
 
