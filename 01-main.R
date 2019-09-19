@@ -19,6 +19,7 @@ library(sf)
 library(sp) 
 library(raster)
 library(rgeos)
+library(tools)
 
 # Load custom supporting functions 
 source("00-supporting_functions.R")
