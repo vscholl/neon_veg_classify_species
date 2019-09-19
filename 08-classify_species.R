@@ -37,7 +37,7 @@ independentValidationSet <- TRUE
 # randomly select this amount of data for training, use the rest for validation
 percentTrain <- 0.8 
 
-pcaInsteadOfWavelengths <- FALSE
+pcaInsteadOfWavelengths <- TRUE
 nPCs <- 2 # number of PCAs to keep 
 
 # keep most important variables and run RF again with reduced feature set 
@@ -325,12 +325,12 @@ if(independentValidationSet){
   print(rf_model)
   
   # save RF model to file 
-  save(rf_model, file = paste0(out_dir, outDescription,"rf_model_",
-                               shapefileLayerNames$description[i],".RData"))
+  save(rf_model, file = file.path(dir_data_out, out_description,
+                                  paste0("rf_model_",shapefile_description,".RData")))
   
   # write all relevant information to the textfile: 
   # shapefile name
-  write(shapefileLayerNames$description[i], rf_output_file, append=TRUE)
+  write(shapefile_description, rf_output_file, append=TRUE)
   write("\n", rf_output_file, append=TRUE) #newline
   
   # number of samples per class
@@ -345,13 +345,9 @@ if(independentValidationSet){
   
   # record each accuracy metric in the table for a final comparison.
   # round each value to the nearest decimal place 
-  rfAccuracies$OA_OOB[i] <- round(accuracy$PCC, 1) # Overall Accuracy
-  rfAccuracies$K[i] <- round(accuracy$kappa, 3) #Cohen's Kappa 
+  OA_OOB <- round(accuracy$PCC, 1) # Overall Accuracy
+  K <- round(accuracy$kappa, 3) #Cohen's Kappa 
   
-  # record the users and producer's accuracies for each specie s
-  rfUsersProducers <- data.frame(matrix(ncol = 3, nrow = nrow(shapefileLayerNames)))
-  #colnames(rfAccuracies) <- c("shapefileDescription", "OA", "K")
-  #rfAccuracies$shapefileDescription <- shapefileLayerNames$description
   
   write("\nOverall Accuracy:", rf_output_file, append=TRUE) #newline
   write(accuracy$PCC, rf_output_file, append=TRUE)
@@ -382,13 +378,11 @@ if(independentValidationSet){
                  as.character(val_OA)))
     # write the accuracy summary data frame to file 
     write.csv(confusionTable,
-              paste0(out_dir, outDescription, 
-                     "rfConfusionMatrix_independentValidationSet_",
-                     shapefileLayerNames$description[i],"_Accuracy_",
-                     as.character(round(val_OA, 3)),".csv"))
-    # write the Overall Accuracy for the independent validation set to the
-    # Accuracies data frame
-    rfAccuracies$OA_IndVal[i] <- round(val_OA*100, 1) # Overall Accuracy
+              file.path(dir_data_out, out_description, 
+                     paste0("rfConfusionMatrix_independentValidationSet_",
+                     shapefile_description,"_Accuracy_",
+                     as.character(round(val_OA, 3)),".csv")))
+
   }
   
   
@@ -407,7 +401,7 @@ if(independentValidationSet){
   varImportance <- data.frame(randomForest::importance(rf_model))
   varImportance$feature <- rownames(varImportance)
   varImportance <- varImportance %>% 
-    select(feature, MeanDecreaseAccuracy, MeanDecreaseGini, everything())
+    dplyr::select(feature, MeanDecreaseAccuracy, MeanDecreaseGini, everything())
   varImportanceMDA <- varImportance %>% dplyr::arrange(desc(MeanDecreaseAccuracy))
   varImportanceMDG <- varImportance %>% dplyr::arrange(desc(MeanDecreaseGini))
   
@@ -426,10 +420,11 @@ if(independentValidationSet){
           axis.title=element_text(size=14)) + 
     ggtitle("Variable Importance: Mean Decrease in Accuracy")
   
+  # VS-NOTE: add a parameter for saving plots to file, and/or make a separate function for this
   # save variable importance bar plot to image file 
-  ggsave(filename = paste0(out_dir, outDescription,"varImpPlot_MDA_",
-                           shapefileLayerNames$description[i],
-                           ".png"))
+  #ggsave(filename = paste0(out_dir, outDescription,"varImpPlot_MDA_",
+  #                         shapefileLayerNames$description[i],
+  #                         ".png"))
   
   
   # create bar plot to illustrate variable importance MDG
@@ -448,9 +443,9 @@ if(independentValidationSet){
     ggtitle("Variable Importance: Mean Decrease Gini")
   
   # save variable importance bar plot to image file 
-  ggsave(filename = paste0(out_dir, outDescription,"varImpPlot_MDG_",
-                           shapefileLayerNames$description[i],
-                           ".png"))
+  #ggsave(filename = paste0(out_dir, outDescription,"varImpPlot_MDG_",
+  #                         shapefileLayerNames$description[i],
+  #                         ".png"))
   
   # make varImpPlot using the default dot plot in randomForest
   #randomForest::varImpPlot(rf_model,
@@ -467,7 +462,7 @@ if(independentValidationSet){
   write("\n", rf_output_file, append=TRUE)
   
   # RECORD TOP N MOST IMPORTANT VARIABLES BASED ON MEAN DECREASE GINI 
-  rfVarImp[i,(2+nVar):((1+nVar)+nVar)] <- varImportanceMDG$feature[1:nVar]
+  #rfVarImp[i,(2+nVar):((1+nVar)+nVar)] <- varImportanceMDG$feature[1:nVar]
   
   # variable importance, ordered from highest MDA to lowest
   write("\nVariable Importance, ranked by MDA: \n", 
@@ -476,10 +471,10 @@ if(independentValidationSet){
                  file = rf_output_file,
                  append=TRUE)
   
-  print(paste0("Top ", as.character(nVar)," most important variables ranked by MDA"))
-  print(varImportanceMDA$feature[1:nVar]) 
+  #print(paste0("Top ", as.character(nVar)," most important variables ranked by MDA"))
+  #print(varImportanceMDA$feature[1:nVar]) 
   # RECORD TOP N MOST IMPORTANT VARIABLES BASED ON MEAN DECREASE ACCURACY 
-  rfVarImp[i,2:(nVar+1)] <- varImportanceMDA$feature[1:nVar]
+  #rfVarImp[i,2:(nVar+1)] <- varImportanceMDA$feature[1:nVar]
   
   
   # # TO DO: keep the n most important variables and run the classification again?
@@ -500,6 +495,7 @@ if(independentValidationSet){
   
   # INTERSPECIES VARIABLE COMPARISON BOXPLOTS -------------------------------
   
+  # VS-NOTE: clean up boxplot code
   if (createBoxplots == TRUE){
     
     # select the top n most important variables based on MDA for the current model 
@@ -564,7 +560,6 @@ if(independentValidationSet){
   
   write("\n\n------------------------------\n\n", rf_output_file, append=TRUE)
   
-}
 
 # close the text file
 close(rf_output_file)
