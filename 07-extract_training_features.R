@@ -138,10 +138,11 @@ for (c in 1:length(csvs)){
 spectra_all <- spectra_all %>% dplyr::select(-X.1)
 
 # write ALL the spectra to a single .csv file 
+extracted_features_filename <- file.path(dir_data_out,
+                                  paste0(shapefile_description,
+                                         "-extracted_features.csv"))
 write.csv(spectra_all,
-          file=file.path(dir_data_out,
-                         paste0(shapefile_description,
-                                "-extracted_features.csv")))
+          file=extracted_features_filename)
 
 # delete the individual csv files for each tile 
 file.remove(csvs)

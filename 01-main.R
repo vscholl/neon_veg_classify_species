@@ -20,6 +20,7 @@ library(sp)
 library(raster)
 library(rgeos)
 library(tools)
+library(randomForest) 
 
 # Load custom supporting functions 
 source("00-supporting_functions.R")
