@@ -354,9 +354,3 @@ end_time <- Sys.time()
 elapsed <- end_time - start_time
 print("Elapsed time: ")
 print(elapsed)
-
-# read the text file with wavelength data
-wavelengths = as.numeric(unlist(read.table(file.path(dir_data_out,
-                                                     "wavelengths.txt"),
-                                           skip = 1,
-                                           col.names = 'wavelength')))

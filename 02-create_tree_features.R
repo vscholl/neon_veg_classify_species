@@ -1,38 +1,9 @@
-# This script downloads NEON woody vegetation data from the API and loads 
-# it directly into R. 
+# Create geospatial features (points, polygons with the maximum crown diameter,
+# and polygons with half the maximum crown diameter) for every tree in the 
+# NEON woody vegetation data set. 
 
-
-# Let's load the in-situ Woody Vegetation Structure data straight into R.
-# Specify the NEON site and starting/ending date(s) for the data. 
-# A message in the console will display the total file size to be downloaded.
-# Proceed by typing "y" and pressing Enter. 
-veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"   
-                                              ,site = site_code              
-                                              ,startdate = "2016-01"      
-                                              #,enddate = "YYYY-MM"
-                                              ,package = "basic"          
-                                              ,check.size = T)
-
-# ------------------------------------------------------------------------
-# # Alternative option to loading data straight into R:
-# # Download the files locally from NEON API using the zipsByProduct function. 
-# # They will be stored within "data/data_raw/filesToStack#####" where "#####" 
-# # is the middle portion of the data product ID string. 
-# # Since the data product ID is "DP1.10098.001", files will be saved 
-# # in "filesToStack10098". 
-# neonUtilities::zipsByProduct(dpID = "DP1.10098.001"   
-#                              ,site = "NIWO"              
-#                              ,startdate = "2016-01"      
-#                              #,enddate = "YYYY-MM"
-#                              ,package = "basic"          
-#                              ,savepath = "data/data_raw"
-#                              ,check.size = T)
-# 
-# # The downloaded files can now be passed to stackByTable() to be stacked. 
-# # They are saved within a folder called "stackedFiles" within the "filesToStack10098) directory. 
-# neonUtilities::stackByTable(filepath = "data/data_raw/filesToStack10098" 
-#                             ,folder = T)
-# ------------------------------------------------------------------------
+# VS-NOTE make this script into a function
+# create_tree_features <- function(){
 
 
 # mappingandtagging -----------------------------------------------------------
@@ -165,10 +136,11 @@ sf::st_write(obj = merged_buff_sf
 
 # Write shapefile with CIRCULAR POLYGONS for all mapped stems with 
 # height & crown diameter. Size: 1/2 Maximum crown diameter
-# merged_buff_sf_half_diam <- sf::st_buffer(x = veg_merged_stems_sf
-#                                 # divide max diameter by 2 for the radius
-#                                 ,dist = round((merged_stems_sf$maxCrownDiameter/4)
-#                                               ,digits = 1))
-# sf::st_write(obj = merged_buff_sf_half_diam
-#              ,dsn = file.path(dir_data_out, "veg_polygons_half_diam.shp")
-#              ,delete_dsn = TRUE)
+merged_buff_sf_half_diam <- sf::st_buffer(x = veg_merged_stems_sf
+                                # divide max diameter by 2 for the radius
+                                ,dist = round((veg_merged_stems_sf$maxCrownDiameter/4)
+                                              ,digits = 1))
+sf::st_write(obj = merged_buff_sf_half_diam
+             ,dsn = file.path(dir_data_out, "veg_polygons_half_diam.shp")
+             ,delete_dsn = TRUE)
+

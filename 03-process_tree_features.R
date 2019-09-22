@@ -43,7 +43,7 @@ veg_multibole_removed <- remove_multibole(df = veg_merged)
 
 
 # Count how many trees are left after removing multi-bole entries
-tree_count <- rbind(tree_counts
+tree_counts <- rbind(tree_counts
                     ,data.frame(count = c(nrow(veg_multibole_removed))
       ,description = c(" entries remain after removing multi-bole entries")))
 
@@ -54,51 +54,77 @@ veg_multibole_removed_sf <- sf::st_as_sf(veg_multibole_removed
                                          ,crs = coord_ref)
 
 # Create circular polygons with diamter = maximum crown diameter 
-polygons_multibole_removed <- sf::st_buffer(veg_multibole_removed_sf
-                    ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/2)
-                              ,digits = 1))
+polys_multibole_rmvd_max_diam <- sf::st_buffer(veg_multibole_removed_sf
+            ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/2)
+                                                          ,digits = 1))
 
-
+# Create circular polygons with diamter = half of the maximum crown diameter 
+polys_multibole_rmvd_half_diam <- sf::st_buffer(veg_multibole_removed_sf
+            ,dist = round((veg_multibole_removed_sf$maxCrownDiameter/4)
+                                                             ,digits = 1))
 
 
 # Apply area threshold to remove small polygons ---------------------------
 
 # Define the area threshold in units of [m^2]
-# Start with the area of RGB pixel, 10cm by 10cm
+# Area of RGB pixel, 10cm by 10cm
 px_area_rgb <- 0.1 * 0.1 #[m^2]
 # Gridded LiDAR products and HS pixels are 1m x 1m
 px_area_hs <- 100 * px_area_rgb #[m^2]
-# Multiply area of 1 HS pixel by the number of pixels; 4 in this case 
-px_thresh <- 4
+# Multiply area of 1 HS pixel by the number of pixels; 4 in this case
+# as defined in the main script
+#px_thresh <- 4
 thresh <- px_area_hs * px_thresh #[m^2]
 
-# Remove polygons with area < 4 hyperspectral pixels 
-polygons_thresh <- polygons_multibole_removed %>% 
-  dplyr::mutate(area_m2 = sf::st_area(polygons_multibole_removed)) %>% 
+# Remove max-diam polygons with area < 4 hyperspectral pixels 
+polygons_thresh_max_diam <- polys_multibole_rmvd_max_diam %>% 
+  dplyr::mutate(area_m2 = sf::st_area(polys_multibole_rmvd_max_diam)) %>% 
   dplyr::filter(as.numeric(area_m2) > thresh)
 
+# Remove half-diam polygons with area < 4 hyperspectral pixels 
+polygons_thresh_half_diam <- polys_multibole_rmvd_half_diam %>% 
+  dplyr::mutate(area_m2 = sf::st_area(polys_multibole_rmvd_half_diam)) %>% 
+  dplyr::filter(as.numeric(area_m2) > thresh)
 
 
 # Clip shorter polygons with taller polygons -----------------------------
 
-polygons_clipped <- clip_overlap(polygons_thresh, thresh)
+polygons_clipped_max_diam <- clip_overlap(polygons_thresh_max_diam, thresh)
+polygons_clipped_half_diam <- clip_overlap(polygons_thresh_half_diam, thresh)
+
+# Check and fix/delete invalid geometries. 
+# Remove invalid geometries if the reason
+# for invalidity is "Too few points in geometry component[453729.741 4433259.265]"
+# since there are too few points to create a valid polygon. 
+# Use the reason = TRUE paramater in sf::st_isvalid to see the reason. 
+polygons_clipped_max_diam_is_valid <- sf::st_is_valid(x = polygons_clipped_max_diam)
+polygons_clipped_half_diam_is_valid <- sf::st_is_valid(x = polygons_clipped_half_diam)
+
+# polygons_clipped_valid <- lwgeom::st_make_valid(polygons_clipped)
+polygons_clipped_max_diam_valid <- polygons_clipped_max_diam %>% 
+  dplyr::filter(polygons_clipped_max_diam_is_valid)
+polygons_clipped_half_diam_valid <- polygons_clipped_half_diam %>% 
+  dplyr::filter(polygons_clipped_half_diam_is_valid)
 
 # Count how many trees are left after clipping areas of overlap and applying 
 # area threshold to clipped polygons
-tree_count <- rbind(tree_counts
-                    ,data.frame(count = c(nrow(polygons_clipped))
-          ,description = c(" entries remain after clipping overlapping regions")))
-
-# Check and fix/delete invalid geometries
-# VS-NOTE: Delete invalid geometries if the reason
-# for invalidity is "Too few points in geometry component[453729.741 4433259.265]"
-polygons_clipped_is_valid <- sf::st_is_valid(x = polygons_clipped, reason = TRUE)
-# polygons_clipped_valid <- lwgeom::st_make_valid(polygons_clipped)
-
+tree_counts <- rbind(tree_counts
+                     ,data.frame(count = c(nrow(polygons_clipped_max_diam_valid))
+     ,description = c(" max_diam polygons remain after clipping overlap regions")))
+tree_counts <- rbind(tree_counts
+                     ,data.frame(count = c(nrow(polygons_clipped_half_diam_valid))
+     ,description = c(" half_diam polygons remain after clipping overlap regions")))
 
 # Write shapefile with clipped tree crown polygons
-sf::st_write(obj = polygons_clipped
-             ,dsn = file.path(dir_data_out, "veg_polys_clipped_overlap.shp")
+sf::st_write(obj = polygons_clipped_max_diam_valid
+             ,dsn = file.path(dir_data_out, "veg_polys_max_diam_clipped_overlap.shp")
              ,delete_dsn = TRUE)
+sf::st_write(obj = polygons_clipped_half_diam_valid
+             ,dsn = file.path(dir_data_out, "veg_polys_half_diam_clipped_overlap.shp")
+             ,delete_dsn = TRUE)
+
+# Write tree_counts information to a text file to assess the number of trees
+# left after each processing step
+write.csv(tree_counts, file = file.path(dir_data_out, "tree_counts.csv"))
 
 

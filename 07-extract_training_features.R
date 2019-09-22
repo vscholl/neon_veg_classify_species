@@ -3,8 +3,7 @@
 # polygons that correspond to trees at the NEON site)
 
 
-# shapefile containing tree points or polygons
-shapefile_filename <- file.path(dir_data_out, "veg_points_all.shp")
+
 
 # loop through stacked AOP data and extract features 
 stacked_aop_list <- list.files(file.path(dir_data_out, "stacked_aop_data"),
@@ -37,12 +36,13 @@ for (stacked_aop_filename in stacked_aop_list) {
   print("Extracting features in tile:")
   print(basename(stacked_aop_data_filename))
   
+  # read current tile of stacked AOP data 
+  stacked_aop_data <- readRDS(stacked_aop_filename)
+  
   # construct the easting northing string for naming outputs
   east_north_string <- paste0(stacked_aop_data$eastingIDs[1],
                               "_",
                               stacked_aop_data$northingIDs[1])
-  
-  stacked_aop_data <- readRDS(stacked_aop_filename)
   
   # figure out which trees are within the current tile by comparing each
   # X,Y coordinate to the extent of the current tile 

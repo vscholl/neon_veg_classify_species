@@ -44,7 +44,7 @@ nPCs <- 2 # number of PCAs to keep
 #keepMostImpVar <- FALSE
 
 # create boxplots and write to file 
-createBoxplots <- TRUE
+#createBoxplots <- TRUE
 
 # features to use in the RF models.
 # this list is used to filter the columns of the data frame,
@@ -195,21 +195,21 @@ if(independentValidationSet){
     summary(hs_pca)
     features <- cbind(features, hs_pca$x[,1:nPCs]) # add first n PCs to features data frame
     # visualize where each sample falls on a plot with PC2 vs PC1 
-    ggbiplot::ggbiplot(hs_pca, 
-                       choices = 1:2, # which PCs to plot
-                       obs.scale = 1, var.scale = 1, # scale observations & variables 
-                       var.axes=FALSE, # remove arrows 
-                       groups = df$taxonID, # color the points by species
-                       ellipse = TRUE, # draw ellipse around each group
-                       circle = TRUE # draw circle around center of data set
-    )   + 
-      ggtitle("PCA biplot, PC1 and PC2") + 
-      scale_color_brewer(palette="Spectral") + 
-      theme_bw()
-    # save to file 
-    ggplot2::ggsave(paste0(out_dir, outDescription, 
-                           "pcaPlot_",shapefileLayerNames$description[i],
-                           ".png"))
+    # ggbiplot::ggbiplot(hs_pca, 
+    #                    choices = 1:2, # which PCs to plot
+    #                    obs.scale = 1, var.scale = 1, # scale observations & variables 
+    #                    var.axes=FALSE, # remove arrows 
+    #                    groups = df$taxonID, # color the points by species
+    #                    ellipse = TRUE, # draw ellipse around each group
+    #                    circle = TRUE # draw circle around center of data set
+    # )   + 
+    #   ggtitle("PCA biplot, PC1 and PC2") + 
+    #   scale_color_brewer(palette="Spectral") + 
+    #   theme_bw()
+    # # save to file 
+    # ggplot2::ggsave(paste0(out_dir, outDescription, 
+    #                        "pcaPlot_",shapefileLayerNames$description[i],
+    #                        ".png"))
     
   }
   
@@ -394,173 +394,6 @@ if(independentValidationSet){
   # RF model summary, OOB error rate 
   capture.output(rf_model, file = rf_output_file, append=TRUE)
   
-  
-  # VARIABLE IMPORTANCE  ----------------------------------------------------
-  
-  # What variables were important? --> Consult the variable importance plot. 
-  varImportance <- data.frame(randomForest::importance(rf_model))
-  varImportance$feature <- rownames(varImportance)
-  varImportance <- varImportance %>% 
-    dplyr::select(feature, MeanDecreaseAccuracy, MeanDecreaseGini, everything())
-  varImportanceMDA <- varImportance %>% dplyr::arrange(desc(MeanDecreaseAccuracy))
-  varImportanceMDG <- varImportance %>% dplyr::arrange(desc(MeanDecreaseGini))
-  
-  # create bar plot to illustrate variable importance MDA
-  ggplot(data = varImportanceMDA, aes(x = reorder(feature, MeanDecreaseAccuracy), 
-                                      y = MeanDecreaseAccuracy,
-                                      fill = MeanDecreaseAccuracy)) + 
-    geom_bar(stat = 'identity', color = "black", size = 0.1, show.legend = FALSE) + 
-    labs(x = "Variable", y = "Importance (MDA)") +
-    coord_flip() + 
-    theme_bw() + 
-    scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(9,"BuGn")),
-                         values = rescale(varImportanceMDA$MeanDecreaseAccuracy, 
-                                          to = c(0, 1))) + 
-    theme(axis.text=element_text(size=12),
-          axis.title=element_text(size=14)) + 
-    ggtitle("Variable Importance: Mean Decrease in Accuracy")
-  
-  # VS-NOTE: add a parameter for saving plots to file, and/or make a separate function for this
-  # save variable importance bar plot to image file 
-  #ggsave(filename = paste0(out_dir, outDescription,"varImpPlot_MDA_",
-  #                         shapefileLayerNames$description[i],
-  #                         ".png"))
-  
-  
-  # create bar plot to illustrate variable importance MDG
-  ggplot(data = varImportanceMDG, aes(x = reorder(feature, MeanDecreaseGini), 
-                                      y = MeanDecreaseGini,
-                                      fill = MeanDecreaseGini)) + 
-    geom_bar(stat = 'identity', color = "black", size = 0.1, show.legend = FALSE) + 
-    labs(x = "Variable", y = "Importance (MDG)") +
-    coord_flip() + 
-    theme_bw() + 
-    scale_fill_gradientn(colors = rev(RColorBrewer::brewer.pal(9,"OrRd")),
-                         values = rescale(varImportanceMDG$MeanDecreaseGini, 
-                                          to = c(0, 1))) + 
-    theme(axis.text=element_text(size=12),
-          axis.title=element_text(size=14)) + 
-    ggtitle("Variable Importance: Mean Decrease Gini")
-  
-  # save variable importance bar plot to image file 
-  #ggsave(filename = paste0(out_dir, outDescription,"varImpPlot_MDG_",
-  #                         shapefileLayerNames$description[i],
-  #                         ".png"))
-  
-  # make varImpPlot using the default dot plot in randomForest
-  #randomForest::varImpPlot(rf_model,
-  #                         main = shapefileLayerNames$description[i])
-  
-  
-  # Ordered from highest MDGini to lowest
-  write("\nVariable Importance, ranked by Mean Decrease Gini: \n", 
-        rf_output_file, append=TRUE)
-  capture.output(varImportanceMDG,
-                 file = rf_output_file,
-                 append=TRUE)
-  
-  write("\n", rf_output_file, append=TRUE)
-  
-  # RECORD TOP N MOST IMPORTANT VARIABLES BASED ON MEAN DECREASE GINI 
-  #rfVarImp[i,(2+nVar):((1+nVar)+nVar)] <- varImportanceMDG$feature[1:nVar]
-  
-  # variable importance, ordered from highest MDA to lowest
-  write("\nVariable Importance, ranked by MDA: \n", 
-        rf_output_file, append=TRUE)
-  capture.output(varImportanceMDA,
-                 file = rf_output_file,
-                 append=TRUE)
-  
-  #print(paste0("Top ", as.character(nVar)," most important variables ranked by MDA"))
-  #print(varImportanceMDA$feature[1:nVar]) 
-  # RECORD TOP N MOST IMPORTANT VARIABLES BASED ON MEAN DECREASE ACCURACY 
-  #rfVarImp[i,2:(nVar+1)] <- varImportanceMDA$feature[1:nVar]
-  
-  
-  # # TO DO: keep the n most important variables and run the classification again?
-  # print("KEEPING TOP 5 VARIABLES AND RUNNING RF AGAIN ")
-  # if (keepMostImpVar == TRUE) {
-  #   mostImpVar <- rownames(varImp[1:5,])
-  #   features2 <- features %>% dplyr::select(taxonID, c(mostImpVar))
-  #   # run RF model again, this time with reduced features
-  #   set.seed(104)
-  #   rf_model2 <- randomForest::randomForest(as.factor(features2$taxonID) ~ .,
-  #                                          data=features2,
-  #                                          importance=TRUE,
-  #                                          ntree=ntree) # ntree is number of trees to grow
-  #   print(rf_model2)
-  # }
-  # initial test shows that this does not significantly improve the accuracy
-  
-  
-  # INTERSPECIES VARIABLE COMPARISON BOXPLOTS -------------------------------
-  
-  # VS-NOTE: clean up boxplot code
-  if (createBoxplots == TRUE){
-    
-    # select the top n most important variables based on MDA for the current model 
-    vars <- as.character(rfVarImp[i,2:(nVar+1) ])
-    # subset the features data frame to obtain just the columns needed 
-    test_features <- features %>% dplyr::select(c(taxonID, vars))
-    # "gather" the wide data to make it longer.
-    # each row represents a value. There is a separate column to indicate
-    # species and also which feature (lidar, hs, rgb, etc...) for grouping in the plot
-    features_gathered <- tidyr::gather(test_features, "feature", "value",-taxonID)
-    # make a new column where each feature name is a factor, so the plots
-    # can be arranged in order of most important to least important 
-    features_gathered$feature_ordered = factor(features_gathered$feature, levels=vars)
-    
-    # create the multi-plot
-    g <- ggplot(data = features_gathered, aes(x = taxonID, y = value)) + 
-      geom_boxplot(aes(fill = taxonID),outlier.size = 0.2) + 
-      facet_wrap(. ~ feature_ordered,scales='free',ncol=3) + 
-      scale_fill_brewer(palette = "Spectral") + 
-      theme_bw() + 
-      theme(axis.title.x=element_blank(),
-            axis.text.x=element_blank(),
-            axis.ticks.x=element_blank(),
-            plot.title = element_text(size = 10)) +
-      ggtitle(paste0("Interspecies boxplot comparison of MDA most important features: \n",
-                     shapefileLayerNames$description[i])) 
-    ggsave(g, filename = paste0(out_dir,outDescription,"boxplot_impVarMDA_",shapefileLayerNames$description[i],".png"),
-           width = 6, height = 5, dpi = 300, units = "in", device='png')
-    
-    
-    # MDG
-    # select the top n most important variables based on MDA for the current model 
-    vars <- as.character(rfVarImp[i,(2+nVar):(1+2*nVar)])
-    # subset the features data frame to obtain just the columns needed 
-    test_features <- features %>% dplyr::select(c(taxonID, vars))
-    # "gather" the wide data to make it longer.
-    # each row represents a value. There is a separate column to indicate
-    # species and also which feature (lidar, hs, rgb, etc...) for grouping in the plot
-    features_gathered <- tidyr::gather(test_features, "feature", "value",-taxonID)
-    # make a new column where each feature name is a factor, so the plots
-    # can be arranged in order of most important to least important 
-    features_gathered$feature_ordered = factor(features_gathered$feature, levels=vars)
-    
-    # create the multi-plot
-    g2 <- ggplot(data = features_gathered, aes(x = taxonID, y = value)) + 
-      geom_boxplot(aes(fill = taxonID),outlier.size = 0.2) + 
-      facet_wrap(. ~ feature_ordered,scales='free',ncol=3) + 
-      scale_fill_brewer(palette = "Spectral") + 
-      theme_bw() + 
-      theme(axis.title.x=element_blank(),
-            axis.text.x=element_blank(),
-            axis.ticks.x=element_blank(),
-            plot.title = element_text(size = 10)) +
-      ggtitle(paste0("Interspecies boxplot comparison of MDG most important features: \n",
-                     shapefileLayerNames$description[i]))
-    
-    ggsave(g2, filename = paste0(out_dir,outDescription,"boxplot_impVarMDGini_",shapefileLayerNames$description[i],".png"),
-           width = 6, height = 5, dpi = 300, units = "in", device='png')
-    
-  }
-  
-  
-  write("\n\n------------------------------\n\n", rf_output_file, append=TRUE)
-  
-
 # close the text file
 close(rf_output_file)
 

@@ -5,8 +5,9 @@
 
 # specify which tile to plot.
 # 452000_4432000 has a visible road (defining feature)
-east_north_string <- "452000_4432000"
-stacked_aop_data_filename = file.path(stacked_aop_data_dir,
+#east_north_string <- "452000_4432000"
+stacked_aop_data_filename = file.path(dir_data_out,
+                                      "stacked_aop_data",
                                       paste0("stacked_aop_data_",
                                              east_north_string, ".rds"))
 

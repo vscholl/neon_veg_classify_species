@@ -33,7 +33,7 @@ list_tiles_with_veg <- function(veg_df, out_dir){
   
   # write to text file 
   tile_names <- paste(tiles$e, tiles$n, sep="_")
-  tiles_file <- file(paste(out_dir,"list_tiles.txt", sep=""))
+  tiles_file <- file.path(out_dir,"list_tiles.txt")
   writeLines(tile_names, tiles_file)
   close(tiles_file)
   
@@ -163,7 +163,7 @@ clip_overlap <- function(df, thresh){
   
   for (individualID in as.character(polys_ordered@data$individualID)){
     
-    #print(individualID)
+    print(individualID)
     
     # if this polygon was removed from the polys_filtered
     # data frame in a previous iteration, skip it 
@@ -182,13 +182,14 @@ clip_overlap <- function(df, thresh){
     if(n_overlap>0){ 
       for (o in 1:n_overlap){
         
-        #print("o")
-        #print(o)
+        print("o")
+        print(o)
         
         # if current polygon ID is not in filtered set
         if(sum(polys_filtered$individualID==individualID) == 0){
           break
         }
+        
         
         # get height of current and test polygons that overlap
         current_poly.height <- current_poly@data$height
@@ -196,6 +197,10 @@ clip_overlap <- function(df, thresh){
         test_poly <- get_poly(polys_filtered, 
                               index_type = 'id', 
                               number = overlap@data$individualID.2[[o]])
+        
+        print(current_poly)
+        print(test_poly)
+        
         test_poly.height <- test_poly@data$height
         
         # combine the ID's of the current and test polygons
@@ -231,6 +236,11 @@ clip_overlap <- function(df, thresh){
           next
         }
         
+        #print("current_poly@polygons[[1]]")
+        #print(current_poly@polygons[[1]])
+        #print("test_poly@polygons[[1]]")
+        #print(test_poly@polygons[[1]])
+        
         # if the area of one of the polygons is equivalent to zero, delete it and 
         # skip to the next overlapping polygon. 
         if(current_poly@polygons[[1]]@area < 0.01){
@@ -262,12 +272,15 @@ clip_overlap <- function(df, thresh){
           clipped_geom <- rgeos::gDifference(test_poly, current_poly, 
                                              byid = TRUE, drop_lower_td = TRUE)
           
+          print("current > test; clipped_geom: ")
+          print(clipped_geom)
+          
           # if the clipped region is NULL, skip to the next polygon comparison.
           if(is.null(clipped_geom)){
             #print("null clipped_geom")
             next
           } else{ 
-          
+            
           # set the ID field to match the test polygon individualID
           clipped_geom@polygons[[1]]@ID <- as.character(test_poly$individualID)
           
@@ -278,12 +291,21 @@ clip_overlap <- function(df, thresh){
           
         } else{
           
+          
           # otherwise, the test polygon is taller: clip the current polygon.
           clipped <- raster::erase(current_poly,
                                    raster::crop(current_poly, test_poly))
           
           clipped_geom <- rgeos::gDifference(current_poly, test_poly,
                                              byid = TRUE, drop_lower_td = TRUE)
+          
+          if(is.null(clipped_geom)){
+            #print("null clipped_geom")
+            next
+          } else{ 
+          
+          print("current < test; clipped_geom: ")
+          print(clipped_geom)
           
           # set the ID field to match the current polygon individualID
           clipped_geom@polygons[[1]]@ID <- as.character(current_poly$individualID)
@@ -292,6 +314,7 @@ clip_overlap <- function(df, thresh){
           # where the current polygon belongs. 
           j <- which(polys_filtered@data$individualID == current_poly$individualID)
           
+          }
         }
         
         # if there is no clipped area, skip to the next overlap polygon
