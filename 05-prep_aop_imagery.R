@@ -68,7 +68,7 @@ for (h5 in h5_list) {
     message("reading stacked_aop_data (already created for current tile)...")
     
     # restore / read the rasterstack from file
-    stacked_aop_data <- readRDS(file = stacked_aop_data_filename)
+    #stacked_aop_data <- readRDS(file = stacked_aop_data_filename)
     
   } else{
     
@@ -296,7 +296,7 @@ for (h5 in h5_list) {
     
     # write the RGB composite to an image file for visualizing in QGIS
     writeRaster(hs_rgb_brick,
-                paste0(out_dir,"rgb_composite_452000_4432000.tif"), 
+                file.path(dir_data_out,"rgb_composite_452000_4432000.tif"), 
                 format="GTiff",
                 overwrite=TRUE)
     

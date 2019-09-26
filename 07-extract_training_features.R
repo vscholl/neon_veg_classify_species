@@ -34,7 +34,7 @@ shapefile_description <- tools::file_path_sans_ext(basename(shapefile_filename))
 for (stacked_aop_filename in stacked_aop_list) {
   
   print("Extracting features in tile:")
-  print(basename(stacked_aop_data_filename))
+  print(basename(stacked_aop_filename))
   
   # read current tile of stacked AOP data 
   stacked_aop_data <- readRDS(stacked_aop_filename)
