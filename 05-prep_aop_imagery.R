@@ -65,7 +65,7 @@ for (h5 in h5_list) {
   if (file.exists(stacked_aop_data_filename)){
     
     # if it exists, read that instead of re-generating the same rasterstack.
-    message("reading stacked_aop_data (already created for current tile)...")
+    message("stacked_aop_data already created for current tile.")
     
     # restore / read the rasterstack from file
     #stacked_aop_data <- readRDS(file = stacked_aop_data_filename)

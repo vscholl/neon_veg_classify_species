@@ -112,6 +112,17 @@ source("06-plot_aop_imagery.R")
 
 # USER-DEFINED INPUT 
 # shapefile containing tree points or polygons
-shapefile_filename <- file.path(dir_data_out, "veg_points_all.shp")
+shapefile_filename <- file.path(dir_data_out, "veg_points_w_height_diam.shp")
 
 source("07-extract_training_features.R")
+
+shapefile_filename <- file.path(dir_data_out, "veg_polygons_half_diam.shp")
+source("07-extract_training_features.R")
+shapefile_filename <- file.path(dir_data_out, "veg_polygons_max_diam.shp")
+source("07-extract_training_features.R")
+shapefile_filename <- file.path(dir_data_out, "veg_polys_half_diam_clipped_overlap.shp")
+source("07-extract_training_features.R")
+shapefile_filename <- file.path(dir_data_out, "veg_polys_max_diam_clipped_overlap.shp")
+source("07-extract_training_features.R")
+
+# Write the points associated with each clipped-overlap polygon set to file as well
