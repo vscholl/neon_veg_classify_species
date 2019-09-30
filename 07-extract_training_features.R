@@ -138,6 +138,7 @@ for (c in 1:length(csvs)){
 spectra_all <- spectra_all %>% dplyr::select(-X.1)
 
 # write ALL the spectra to a single .csv file 
+# VS-NOTE return this filename for use in subsequent scripts? 
 extracted_features_filename <- file.path(dir_data_out,
                                   paste0(shapefile_description,
                                          "-extracted_features.csv"))

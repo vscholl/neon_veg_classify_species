@@ -112,10 +112,9 @@ source("06-plot_aop_imagery.R")
 
 # USER-DEFINED INPUT 
 # shapefile containing tree points or polygons
+
 shapefile_filename <- file.path(dir_data_out, "veg_points_w_height_diam.shp")
-
 source("07-extract_training_features.R")
-
 shapefile_filename <- file.path(dir_data_out, "veg_polygons_half_diam.shp")
 source("07-extract_training_features.R")
 shapefile_filename <- file.path(dir_data_out, "veg_polygons_max_diam.shp")
@@ -126,3 +125,46 @@ shapefile_filename <- file.path(dir_data_out, "veg_polys_max_diam_clipped_overla
 source("07-extract_training_features.R")
 
 # Write the points associated with each clipped-overlap polygon set to file as well
+
+
+# Classify species --------------------------------------------------------
+# Train random forest model and assess species classification accuracy
+
+# Model outputs will be written to a folder within data/data_output 
+# starting with "rf_" followed by a description of each shapfile 
+# containing points or polygons per tree. 
+
+# all tree point locations with height and crown diameter measurements 
+shapefile_filename <- file.path(dir_data_out, 
+                                "veg_points_w_height_diam.shp")
+source("08-classify_species.R")
+
+# all tree polygons, circular with half the maximum crown diameter per tree
+shapefile_filename <- file.path(dir_data_out, 
+                                "veg_polygons_half_diam.shp")
+source("08-classify_species.R")
+
+# all tree polygons, circular with the maximum crown diameter per tree
+shapefile_filename <- file.path(dir_data_out, 
+                                "veg_polygons_max_diam.shp")
+source("08-classify_species.R")
+
+# tree polygons, circular with half the maximum crown diameter per tree
+# after being clipped and thresholded using experimental processing workflow
+shapefile_filename <- file.path(dir_data_out, 
+                                "veg_polys_half_diam_clipped_overlap.shp")
+source("08-classify_species.R")
+
+# tree polygons, circular with the maximum crown diameter per tree
+# after being clipped and thresholded using experimental processing workflow
+shapefile_filename <- file.path(dir_data_out, 
+                                "veg_polys_max_diam_clipped_overlap.shp")
+source("08-classify_species.R")
+
+# Accuracy assessment / comparison ----------------------------------------
+
+# list the shapfile names corresponding to directories with models to assess
+dirs_to_assess <- c("veg_points_w_height_diam.shp")
+
+source("09-assess_accuracy.R")
+

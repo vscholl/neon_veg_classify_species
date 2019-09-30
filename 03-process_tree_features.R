@@ -116,12 +116,28 @@ tree_counts <- rbind(tree_counts
      ,description = c(" half_diam polygons remain after clipping overlap regions")))
 
 # Write shapefile with clipped tree crown polygons
+# maximum crown diameter
 sf::st_write(obj = polygons_clipped_max_diam_valid
              ,dsn = file.path(dir_data_out, "veg_polys_max_diam_clipped_overlap.shp")
              ,delete_dsn = TRUE)
+# half the maximum crown diameter 
 sf::st_write(obj = polygons_clipped_half_diam_valid
              ,dsn = file.path(dir_data_out, "veg_polys_half_diam_clipped_overlap.shp")
              ,delete_dsn = TRUE)
+
+
+
+# VS-NOTE: To do: Write shapefile with POINT locations corresponding 
+# to polygons with half the maximum crown diameter 
+# veg_merged_stems_sf <- sf::st_as_sf(x = veg_merged
+#                                     ,coords = c("easting", "northing")
+#                                     ,crs = coord_ref)
+# sf::st_write(obj = veg_merged_stems_sf
+#              ,dsn = file.path(dir_data_out, "veg_points_w_height_diam.shp")
+#              ,delete_dsn = TRUE)
+
+
+
 
 # Write tree_counts information to a text file to assess the number of trees
 # left after each processing step

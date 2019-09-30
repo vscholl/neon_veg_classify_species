@@ -4,8 +4,17 @@
 
 # user-defined parameters -----------------------------------------------------
 
+
+
+# get a description of the shapefile to use for naming outputs
+shapefile_description <- tools::file_path_sans_ext(basename(shapefile_filename))
+# define the csv file containing extracted features
+extracted_features_filename <- file.path(dir_data_out,
+                                         paste0(shapefile_description,
+                                                "-extracted_features.csv"))
+
+
 # description to name a folder for the classification outputs 
-# extracted_features_filename --> the csv file containing extracted features
 out_description <- paste0("rf_",shapefile_description) 
 check_create_dir(file.path(dir_data_out,out_description))
 
@@ -45,6 +54,21 @@ nPCs <- 2 # number of PCAs to keep
 
 # create boxplots and write to file 
 #createBoxplots <- TRUE
+
+# remove the bad bands from the list of wavelengths 
+remove_bands <- wavelengths[(wavelengths > bad_band_window_1[1] & 
+                               wavelengths < bad_band_window_1[2]) | 
+                              (wavelengths > bad_band_window_2[1] & 
+                                 wavelengths < bad_band_window_2[2])]
+
+# create a LUT that matches actual wavelength values with the column names,
+# X followed by the rounded wavelength values. Remove the rows that are 
+# within thebad band ranges. 
+wavelength_lut <- data.frame(wavelength = wavelengths,
+                             xwavelength = paste0("X", 
+                                                  as.character(round(wavelengths))),
+                             stringsAsFactors = FALSE) %>% 
+  filter(!wavelength %in% remove_bands) 
 
 # features to use in the RF models.
 # this list is used to filter the columns of the data frame,
@@ -92,7 +116,7 @@ if(independentValidationSet){
   # that these pixels correspond to. 
   
   # read the file with spectra to sample randomly for validation trees 
-  validationSourceFilename <- extracted_spectra_filename
+  validationSourceFilename <- extracted_features_filename
   
   # remove any spectra with a height of 0
   # and remove any factors
@@ -213,6 +237,7 @@ if(independentValidationSet){
     
   }
   
+  # VS-NOTE: scale feature values before training classifier
   print("Features used in current RF model: ")
   print(colnames(features))
   
@@ -258,9 +283,9 @@ if(independentValidationSet){
                             features[,"northingIDs"], 
                             sep = "_") 
     
-    print("The following pixelNumber_easting_northing values are ")
-    print("found in the current input set and the validation set: ")
-    print(intersect(features$dfIDs, valIDs))
+    #print("The following pixelNumber_easting_northing values are ")
+    #print("found in the current input set and the validation set: ")
+    #print(intersect(features$dfIDs, valIDs))
     
     print("Originally this many rows in the features DF: ")
     print(nrow(features))
