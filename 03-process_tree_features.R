@@ -71,17 +71,16 @@ polys_multibole_rmvd_half_diam <- sf::st_buffer(veg_multibole_removed_sf
 px_area_rgb <- 0.1 * 0.1 #[m^2]
 # Gridded LiDAR products and HS pixels are 1m x 1m
 px_area_hs <- 100 * px_area_rgb #[m^2]
-# Multiply area of 1 HS pixel by the number of pixels; 4 in this case
-# as defined in the main script
-#px_thresh <- 4
+# Multiply area of 1 HS pixel by the number of pixels; 
+# as defined in the main script by the px_thresh variable
 thresh <- px_area_hs * px_thresh #[m^2]
 
-# Remove max-diam polygons with area < 4 hyperspectral pixels 
+# Remove max-diam polygons with area < n hyperspectral pixels 
 polygons_thresh_max_diam <- polys_multibole_rmvd_max_diam %>% 
   dplyr::mutate(area_m2 = sf::st_area(polys_multibole_rmvd_max_diam)) %>% 
   dplyr::filter(as.numeric(area_m2) > thresh)
 
-# Remove half-diam polygons with area < 4 hyperspectral pixels 
+# Remove half-diam polygons with area < n hyperspectral pixels 
 polygons_thresh_half_diam <- polys_multibole_rmvd_half_diam %>% 
   dplyr::mutate(area_m2 = sf::st_area(polys_multibole_rmvd_half_diam)) %>% 
   dplyr::filter(as.numeric(area_m2) > thresh)
