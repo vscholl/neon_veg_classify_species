@@ -22,12 +22,6 @@ check_create_dir(file.path(dir_data_out,out_description))
 taxon_list <- c("ABLAL","PICOL","PIEN","PIFL2")
 
 
-
-# define the "bad bands" wavelength ranges in nanometers, where atmospheric 
-# absorption creates unreliable reflectance values. 
-bad_band_window_1 <- c(1340, 1445)
-bad_band_window_2 <- c(1790, 1955)
-
 # RF tuning parameter, number of trees to grow. default value 500
 ntree <- 5000
 
@@ -38,7 +32,7 @@ randomMinSamples <- FALSE
 
 # To remove the sample size bias, if TRUE this filters down each of the raw NEON 
 # shapefile data sets to only contain the individualIDs present in the neon_veg set 
-neonvegIDsForBothShapefiles <- FALSE
+neonvegIDsForBothShapefiles <- TRUE
 
 # boolean variable. if TRUE, keep separate set for validation
 independentValidationSet <- TRUE 
@@ -55,6 +49,10 @@ nPCs <- 2 # number of PCAs to keep
 # create boxplots and write to file 
 #createBoxplots <- TRUE
 
+# define the "bad bands" wavelength ranges in nanometers, where atmospheric 
+# absorption creates unreliable reflectance values. 
+bad_band_window_1 <- c(1340, 1445)
+bad_band_window_2 <- c(1790, 1955)
 # remove the bad bands from the list of wavelengths 
 remove_bands <- wavelengths[(wavelengths > bad_band_window_1[1] & 
                                wavelengths < bad_band_window_1[2]) | 
@@ -175,6 +173,30 @@ if(independentValidationSet){
   df_orig <- df_orig %>% 
     dplyr::filter(taxonID %in% taxon_list)
   
+  # testing the influence of sampling bias 
+  # VS-NOTE: need o modify before neonvegIDsForBothShapefiles=TRUE can be run. 
+  if(neonvegIDsForBothShapefiles){
+    # filter the raw NEON data down to contain the same individual ID's as the 
+    # corresponding neon_veg data set. This will remove the potential influence
+    # of sampling bias (since there is nearly double # of samples for the raw
+    # NEON data sets) and just compare any influence that the clipping/filtering
+    # steps have on the polygons 
+    if(grepl("veg_points", extracted_features_filename)){
+      print(paste0("Filtering individualIDs to match those in veg_points:", extracted_features_filename))
+      filterIDs <- unique(droplevels(df_orig$indvdID))
+    }
+    # check for the neon_veg halfDiameter shapefile; keep track of the individual ID's 
+    if(grepl("polygons_max_diam", extracted_features_filename)){
+      print(paste0("Filtering individualIDs to match those in neonveg_halfDiam:", extracted_features_filename))
+      filterIDs <- neonveg_halfDiam_IDs
+    }
+    # check for the neon_veg maxDiameter shapefile; keep track of the individual ID's 
+    if(grepl("polygons_half_diam", extracted_features_filename)){
+      print(paste0("Filtering individualIDs to match those in neonveg_maxDiam:", extracted_features_filename))
+      filterIDs <- neonveg_maxDiam_IDs
+    }
+    df_orig <- df_orig %>% dplyr::filter(indvdID %in% filterIDs) %>% droplevels()
+  }
   
   
   

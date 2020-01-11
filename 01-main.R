@@ -134,6 +134,8 @@ source("07-extract_training_features.R")
 # starting with "rf_" followed by a description of each shapfile 
 # containing points or polygons per tree. 
 
+
+
 # all tree point locations with height and crown diameter measurements 
 shapefile_filename <- file.path(dir_data_out, 
                                 "veg_points_w_height_diam.shp")
@@ -164,7 +166,16 @@ source("08-classify_species.R")
 # Accuracy assessment / comparison ----------------------------------------
 
 # list the shapfile names corresponding to directories with models to assess
-dirs_to_assess <- c("veg_points_w_height_diam.shp")
+dirs_to_assess <- c("veg_points_w_height_diam.shp"
+                    ,"veg_polygons_half_diam.shp"
+                    ,"veg_polygons_max_diam.shp"
+                    ,"veg_polys_half_diam_clipped_overlap.shp"
+                    ,"veg_polys_max_diam_clipped_overlap.shp")
 
+# VS-NOTE: need to calculate Indedendent validation set accuracy within script 8
+# VS-NOTE: accuracy values are slightly different compared to initial analysis.
+# VS-NOTE: need to get the neonvegIDsForBothShapefiles step working to filter down
+# the same trees for a comparison to remove the sampling bias... 
+# how to do this robustly? 
 source("09-assess_accuracy.R")
 
