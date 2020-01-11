@@ -2,9 +2,6 @@
 # and polygons with half the maximum crown diameter) for every tree in the 
 # NEON woody vegetation data set. 
 
-# VS-NOTE make this script into a function
-# create_tree_features <- function(){
-
 
 # mappingandtagging -----------------------------------------------------------
 # This data table contains mapped tree stems using distance and azimuth from
