@@ -33,7 +33,7 @@ list_tiles_with_veg <- function(veg_df, out_dir){
   
   # write to text file 
   tile_names <- paste(tiles$e, tiles$n, sep="_")
-  tiles_file <- file.path(out_dir,"list_tiles.txt")
+  tiles_file <- file(file.path(out_dir,"list_tiles.txt"))
   writeLines(tile_names, tiles_file)
   close(tiles_file)
   
