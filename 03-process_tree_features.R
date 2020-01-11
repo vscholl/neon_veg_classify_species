@@ -105,6 +105,11 @@ polygons_clipped_max_diam_valid <- polygons_clipped_max_diam %>%
 polygons_clipped_half_diam_valid <- polygons_clipped_half_diam %>% 
   dplyr::filter(polygons_clipped_half_diam_is_valid)
 
+# VS-NOTE: need to test; run through the clipping workflow once more 
+#polygons_clipped_max_diam2 <- clip_overlap(polygons_clipped_max_diam_valid, thresh)
+#polygons_clipped_half_diam2 <- clip_overlap(polygons_clipped_half_diam_valid, thresh)
+
+
 # Count how many trees are left after clipping areas of overlap and applying 
 # area threshold to clipped polygons
 tree_counts <- rbind(tree_counts
