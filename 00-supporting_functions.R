@@ -44,7 +44,14 @@ list_tiles_with_veg <- function(veg_df, out_dir){
 remove_multibole <- function(df){
   
   # List all individual ID strings 
-  ind_IDs_all <- as.character(unique(droplevels(df$individualID)))
+  if(is.factor(df$individualID)){
+    # drop factor levels, if they are factors
+    ind_IDs_all <- as.character(unique(droplevels(df$individualID)))
+  } else{
+    # otherwise, if they are already characters, just determine the unique IDs 
+    ind_IDs_all <- as.character(unique(df$individualID))
+  }
+  
   
   # Split each individual ID using a period delimiter
   last_id_section <- sapply(stringr::str_split(ind_IDs_all, "[.]"), tail, 1)
