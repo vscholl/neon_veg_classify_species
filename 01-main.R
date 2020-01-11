@@ -58,6 +58,13 @@ veg_raw <- neonUtilities::loadByProduct(dpID = "DP1.10098.001"
                                         ,package = "basic"          
                                         ,check.size = T)
 
+# If this function is not working, then woody vegetation structure data 
+# can be directly downloaded from the NEON data portal. 
+# After downloading the zip file, you can use the neonUtilities::stackByTable
+# function to combine these data into a concise set of tables.
+#neonUtilities::stackByTable(dpID = 'DP1.10098.001',
+#                            filepath = "~/Downloads/NEON_struct-woody-plant-NIWO-2016.zip")
+
 
 # Create features (points or polygons) for each tree ----------------------
 
