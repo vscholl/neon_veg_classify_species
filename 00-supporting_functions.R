@@ -252,7 +252,7 @@ clip_overlap <- function(df, thresh){
           
         } else if(test_poly@polygons[[1]]@area < 0.01){
           # delete the test polygon from the polygons_filtered data frame if its
-          # area is essentially 0 (using the criterion < 0.5 here). This step 
+          # area is essentially 0 (using the criterion < 0.01 here). This step 
           # was added for instances where after clipping, a small edge fragment remains.
           polys_filtered <- polys_filtered[polys_filtered$individualID!=test_poly$individualID,]
           
@@ -277,7 +277,16 @@ clip_overlap <- function(df, thresh){
           
           # if the clipped region is NULL, skip to the next polygon comparison.
           if(is.null(clipped_geom)){
-            #print("null clipped_geom")
+            print("null clipped_geom")
+            
+            #----
+            # VS-NOTE: seeing if this fixes the issue with NEON.PLA.D13.NIWO.01626
+            # where an engulfed polygon remains after the workflow...
+            # delete the test polygon from the polygons_filtered data frame
+            # in this case because the test polygon is taller and totally 
+            # encompassess the current polygon 
+            #polys_filtered <- polys_filtered[polys_filtered$individualID!=current_poly$individualID,]
+            #-----
             next
           } else{ 
             
