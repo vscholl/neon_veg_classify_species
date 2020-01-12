@@ -1,8 +1,19 @@
 
+# create a directory for figures 
+dir.create("figures")
 
-# Maps in R ---------------------------------------------------------------
+library(data.table)
+library(ggplot2)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(USAboundaries)
+library(ggspatial)
 
-# Read in the NEON plot boundary for NIWO,
+
+# Study Area ---------------------------------------------------------------
+
+# NEON plot boundary for the NIWO site
 # downloaded from: https://www.neonscience.org/data/about-data/spatial-data-maps
 terrestrial_bounds <- sf::st_read("data/data_raw/neon_spatial_data_maps/fieldSamplingBoundaries/terrestrialSamplingBoundaries.shp")
 niwo_bounds <- terrestrial_bounds[terrestrial_bounds$siteName == "Niwot Ridge Mountain Research Station",]
@@ -11,33 +22,35 @@ niwo_bounds <- terrestrial_bounds[terrestrial_bounds$siteName == "Niwot Ridge Mo
 neon_domains <- sf::st_read("data/data_raw/neon_spatial_data_maps/NEONDomains_0/NEON_Domains.shp")
 
 # create a SF point for the location of the NIWO site 
-# NIWO latitude, longitude
-# 40.05425, -105.58237
+# latitude: 40.05425, longitude: -105.58237
+niwo_point <- data.table(
+  place=c("NIWO"),
+  longitude=c(-105.58237),
+  latitude=c(40.05425))
 
+# convert to SF format for easy plotting with ggplot 
+niwo_point_sf <- sf::st_as_sf(niwo_point, 
+                              coords = c("longitude", "latitude"), 
+                              crs = "+proj=longlat +datum=WGS84")
 
 
 # Tutorial about maps in R: https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html
-library(ggplot2)
-library(sf)
-library(rnaturalearth)
-library(rnaturalearthdata)
 
 # get country data for the entire world 
 world <- ne_countries(scale = "medium", returnclass = "sf")
 
 # get states data (admin level 1 in USA)
-library(USAboundaries)
 states <- USAboundaries::us_states()
 
 # isolate a single state from the bunch
 colorado <- states[states$name == "Colorado",]
 
 # make a map with a scale bar and north arrow using the ggspatial package 
-library(ggspatial)
 ggplot() +
   geom_sf(data = world) +
   geom_sf(data = states) + 
   geom_sf(data = colorado, color = "black", fill = "darkgrey") + 
+  geom_sf(data = niwo_point_sf, color = "black", shape = 8, size = 3) + 
   #geom_sf(data = niwo_bounds) + 
   annotation_scale(location = "bl", width_hint = 0.5) +
   annotation_north_arrow(location = "br", which_north = "true", 
@@ -47,6 +60,7 @@ ggplot() +
   xlab("Longitude") + ylab("Latitude") +
   theme_bw() 
 
-  # ggtitle("Main plot title")
+# write map to an image file 
+ggsave(filename = "figures/study_area.png", device = "png", width = 8, height = 5)
 
 
