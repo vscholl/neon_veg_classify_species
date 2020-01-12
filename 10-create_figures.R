@@ -50,7 +50,7 @@ ggplot() +
   geom_sf(data = world) +
   geom_sf(data = states) + 
   geom_sf(data = colorado, color = "black", fill = "darkgrey") + 
-  geom_sf(data = niwo_point_sf, color = "black", shape = 8, size = 3) + 
+  geom_sf(data = niwo_point_sf, color = "black", size = 2) + 
   #geom_sf(data = niwo_bounds) + 
   annotation_scale(location = "bl", width_hint = 0.5) +
   annotation_north_arrow(location = "br", which_north = "true", 
@@ -64,3 +64,8 @@ ggplot() +
 ggsave(filename = "figures/study_area.png", device = "png", width = 8, height = 5)
 
 
+# NIWO site up close ------------------------------------------------------
+
+ggplot() +
+  #geom_sf(data = colorado) + 
+  geom_sf(data = niwo_bounds)
