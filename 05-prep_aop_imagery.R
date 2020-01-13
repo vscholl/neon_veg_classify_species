@@ -266,16 +266,32 @@ for (h5 in h5_list) {
   
   # plot rasters ------------------------------------------------------------
   # show raster examples for specific tile with a road (defining feature)
-  if(east_north_string == "452000_4432000"){
+  
+  if(FALSE){
+  #if(east_north_string == "452000_4432000"){
+    
+    # VS-NOTE: Getting an error when I try to plot these giant rasters. Memory issue?
+    #Error in file(fn, "rb") : cannot open the connection
+    #In addition: Warning message:
+    #  In file(fn, "rb") :
+    #  cannot open file '/private/var/folders/1y/x4q7zlx13hq2drrvsnkj5n5c0000gn/T/Rtmp2GErJr/raster/r_tmp_2019-09-25_195634_80159_01427.gri': No such file or directory
     
     # VS-NOTE: In the case when reading the stacks from file,
     # need to adjust the variable names accordingly. i.e. there is no rgb_red variable
     stacked_aop_data <- readRDS(stacked_aop_data_filename)
     
-    # plot the high-res RGB image
-    rgb_stack <- raster::stack(rgb_red, rgb_green, rgb_blue)
-    rgb_brick <- raster::brick(rgb_stack)
-    raster::plotRGB(rgb_brick,
+    # plot the high-res RGB image --> this requires reading the original RGB files
+    #rgb_stack <- raster::stack(rgb_red, rgb_green, rgb_blue)
+    #rgb_brick <- raster::brick(rgb_stack)
+    
+    # plot the down-sampled RGB image 
+    rgb_stack <- raster::stack(stacked_aop_data$rgb_meanR,
+                               stacked_aop_data$rgb_meanG,
+                               stacked_aop_data$rgb_meanB)
+    rgb_brick <- raster::brick(stacked_aop_data$rgb_meanR,
+                               stacked_aop_data$rgb_meanG,
+                               stacked_aop_data$rgb_meanB)
+    raster::plotRGB(rgb_stack,
                     r = 1, g = 2, b = 3,
                     stretch = "lin",
                     axes = TRUE,
@@ -348,7 +364,7 @@ for (h5 in h5_list) {
                  legend.args=list(text='NDVI [0,1]',side=2, font=2, 
                                   line=0.5, cex=0.8)) # legend on color bar))
     
-  }
+      }
   
   
 
