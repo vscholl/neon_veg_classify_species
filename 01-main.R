@@ -123,8 +123,9 @@ shapefile_filename <- file.path(dir_data_out, "veg_polys_half_diam_clipped_overl
 source("07-extract_training_features.R")
 shapefile_filename <- file.path(dir_data_out, "veg_polys_max_diam_clipped_overlap.shp")
 source("07-extract_training_features.R")
+shapefile_filename <- file.path(dir_data_out, "veg_points_half_diam_clipped_overlap.shp")
+source("07-extract_training_features.R")
 
-# Write the points associated with each clipped-overlap polygon set to file as well
 
 
 # Classify species --------------------------------------------------------
