@@ -1,5 +1,5 @@
 # Classify vegetation species using NEON data
-My master's workflow to perform Random Forest classification using freely available data from the National Ecological Observatory Network (NEON). 
+Perform tree species classification using freely available data from the National Ecological Observatory Network (NEON) and Random Forest models.
 
 ## Getting started 
 
@@ -13,13 +13,15 @@ My master's workflow to perform Random Forest classification using freely availa
 ### Workflow
 
 In RStudio, click the "neon_veg_classify_species.Rproj" file to open this R project.
-Run through the following scripts:
+
+Open "01-main.R". Within this main script, run each script in sequence:
 
 ### 1. Main
 Install packages and define parameters for the other scripts. 
+Download NEON woody vegetation data from the API and load it directly into R. 
 
 ### 2. Create tree features
-Download NEON woody vegetation data from the API and loads it directly into R. A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
+A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
 
 ### 3. Process tree features
 Processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data:
@@ -48,6 +50,9 @@ Download selected NEON Airborne Observation Platform (AOP) remote sensing mosaic
 
 Read each of the remote sensing data products and stack them into a single data cube per tile. This includes an aggregation operation to bring the high-resolution camera imagery (10cm x 10cm grid) to the 1m x 1m grid as used by the other data products. 
 
+### 6. Plot AOP imagery
+
+(optional) 
 
 
 
