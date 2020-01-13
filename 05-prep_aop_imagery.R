@@ -268,6 +268,10 @@ for (h5 in h5_list) {
   # show raster examples for specific tile with a road (defining feature)
   if(east_north_string == "452000_4432000"){
     
+    # VS-NOTE: In the case when reading the stacks from file,
+    # need to adjust the variable names accordingly. i.e. there is no rgb_red variable
+    stacked_aop_data <- readRDS(stacked_aop_data_filename)
+    
     # plot the high-res RGB image
     rgb_stack <- raster::stack(rgb_red, rgb_green, rgb_blue)
     rgb_brick <- raster::brick(rgb_stack)
