@@ -174,7 +174,7 @@ if(independentValidationSet){
     dplyr::filter(taxonID %in% taxon_list)
   
   # testing the influence of sampling bias 
-  # VS-NOTE: need o modify before neonvegIDsForBothShapefiles=TRUE can be run. 
+  # VS-NOTE: need to modify before neonvegIDsForBothShapefiles=TRUE can be run. 
   if(neonvegIDsForBothShapefiles){
     # filter the raw NEON data down to contain the same individual ID's as the 
     # corresponding neon_veg data set. This will remove the potential influence
@@ -183,16 +183,19 @@ if(independentValidationSet){
     # steps have on the polygons 
     if(grepl("veg_points", extracted_features_filename)){
       print(paste0("Filtering individualIDs to match those in veg_points:", extracted_features_filename))
-      filterIDs <- unique(droplevels(df_orig$indvdID))
+      neonveg_stem_IDs <- unique(droplevels(df_orig$indvdID))
+      filterIDs <- neonveg_stem_IDs
     }
     # check for the neon_veg halfDiameter shapefile; keep track of the individual ID's 
-    if(grepl("polygons_max_diam", extracted_features_filename)){
+    if(grepl("polygons_half_diam", extracted_features_filename)){
       print(paste0("Filtering individualIDs to match those in neonveg_halfDiam:", extracted_features_filename))
+      neonveg_halfDiam_IDs <- unique(droplevels(df_orig$indvdID))
       filterIDs <- neonveg_halfDiam_IDs
     }
     # check for the neon_veg maxDiameter shapefile; keep track of the individual ID's 
-    if(grepl("polygons_half_diam", extracted_features_filename)){
+    if(grepl("polygons_max_diam", extracted_features_filename)){
       print(paste0("Filtering individualIDs to match those in neonveg_maxDiam:", extracted_features_filename))
+      neonveg_maxDiam_IDs <- unique(droplevels(df_orig$indvdID))
       filterIDs <- neonveg_maxDiam_IDs
     }
     df_orig <- df_orig %>% dplyr::filter(indvdID %in% filterIDs) %>% droplevels()
