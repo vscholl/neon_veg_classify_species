@@ -164,6 +164,12 @@ shapefile_filename <- file.path(dir_data_out,
                                 "veg_polys_max_diam_clipped_overlap.shp")
 source("08-classify_species.R")
 
+# tree points, corresponding to polygons with half the maximum crown diameter per tree
+# after being clipped and thresholded using experimental processing workflow
+shapefile_filename <- file.path(dir_data_out, 
+                                "veg_points_half_diam_clipped_overlap.shp")
+source("08-classify_species.R")
+
 # Accuracy assessment / comparison ----------------------------------------
 
 # list the shapfile names corresponding to directories with models to assess
@@ -171,7 +177,8 @@ dirs_to_assess <- c("veg_points_w_height_diam.shp"
                     ,"veg_polygons_half_diam.shp"
                     ,"veg_polygons_max_diam.shp"
                     ,"veg_polys_half_diam_clipped_overlap.shp"
-                    ,"veg_polys_max_diam_clipped_overlap.shp")
+                    ,"veg_polys_max_diam_clipped_overlap.shp"
+                    ,"veg_points_half_diam_clipped_overlap.shp")
 
 # VS-NOTE: need to calculate Indedendent validation set accuracy within script 8
 # VS-NOTE: accuracy values are slightly different compared to initial analysis.
@@ -179,4 +186,26 @@ dirs_to_assess <- c("veg_points_w_height_diam.shp"
 # the same trees for a comparison to remove the sampling bias... 
 # how to do this robustly? 
 source("09-assess_accuracy.R")
+
+
+
+# Plots ----------------------------------------------------------------------
+
+# Ribbon plots 
+
+# loop through each shapefile name, read the .csv containing spectral reflectance 
+# for all trees within each data set, generate a ribbon plot and write to image file
+# in the figures/ output directory 
+for(i in 1:nrow(shapefileLayerNames)){
+  shapefile_filename <- file.path(dir_data_out, "veg_points_w_height_diam.shp")
+  
+  createRibbonPlot(wavelengths, shapefile_filename)
+  
+  createSeparateRibbonPlots(wavelengths, shapefile_filename)
+  
+}
+
+# Study area map 
+
+
 
