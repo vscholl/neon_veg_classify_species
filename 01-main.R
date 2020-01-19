@@ -130,13 +130,80 @@ source("07-extract_training_features.R")
 
 
 # Classify species --------------------------------------------------------
-# Train random forest model and assess species classification accuracy
-
+# Train random forest model and assess species classification accuracy.
 # Model outputs will be written to a folder within data/data_output 
 # starting with "rf_" followed by a description of each shapfile 
 # containing points or polygons per tree. 
 
+# FOR THE ANALYSIS, extract the validation set of pixels -----------
+independentValidationSet <- TRUE # if TRUE, keep separate set for validation
 
+# randomly select this amount of data for training, use the rest for validation
+percentTrain <- 0.8 
+
+if(independentValidationSet){
+  # randomly select <percentTrain> of data from the clipped half diameter 
+  # polygons for training, use the remaining samples for validation.
+  # keep track of which pixelNumber, easting, northing
+  # that these pixels correspond to. 
+  
+  # read the file with spectra to sample randomly for validation trees.
+  # Clipped half diameter polygons, in this case. 
+  validationSourceFilename <- file.path(dir_data_out, 
+          "veg_polys_half_diam_clipped_overlap-extracted_features.csv")
+  
+  # remove any spectra with a height of 0 and remove any factors
+  df_val <- read.csv(validationSourceFilename) %>% 
+    dplyr::filter(chm>0) %>% 
+    base::droplevels() 
+  
+  # combine the pixelNumber, easting, and northing into a string
+  # for each row with underscore separation
+  dfIDs <- paste(df_val[,"pixelNumber"],
+                 df_val[,"eastingIDs"],
+                 df_val[,"northingIDs"], 
+                 sep = "_") 
+  
+  # add this as a new column to the data frame 
+  df_val <- df_val %>% mutate(dfIDs = dfIDs)
+  
+  # remove any duplicated spectra from consideration
+  df_val <- df_val[!duplicated(df_val$dfIDs),]
+  
+  # randomly sample rows from this data set 
+  set.seed(104)
+  # the number of sampled rows is calculated based on 
+  # percentTrain and the number of rows in the validation set. 
+  # percentTrain may have a value like 0.80 (80% data used to train)
+  train <- sample(nrow(df_val), 
+                  percentTrain*nrow(df_val), 
+                  replace = FALSE)
+  # identify the other 0.20 (20%) of samples for independent validation
+  validationSet <- df_val[-train,]
+  
+  # combine the pixelNumber, easting, and northing into a string
+  # for each row with underscore separation
+  valIDs <- validationSet$dfIDs
+  
+  # in the subsequent species classification step, when each set of 
+  # training features is prepared for the classifier, any spectra with
+  # pixelNumer_eastingIDs_northingIDs that belong in the validation set, 
+  # "valIDs" will be removed. 
+  
+} 
+
+
+# FOR THE ANALYSIS, determine the individual IDs of each clipped set.  
+# To remove the sample size bias, if TRUE this filters down each of the 
+# raw NEON shapefile data sets to only contain the individualIDs 
+# present in the clipped set. This actually only makes sense for the polygon sets.
+neonvegIDsForBothShapefiles <- TRUE
+
+
+
+
+
+# Train random forest classifier for each of the training sets: 
 
 # all tree point locations with height and crown diameter measurements 
 shapefile_filename <- file.path(dir_data_out, 
