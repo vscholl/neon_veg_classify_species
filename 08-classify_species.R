@@ -2,9 +2,6 @@
 # using the in-situ tree measurements for species labels 
 # and remote sensing data as descriptive features. 
 
-# user-defined parameters -----------------------------------------------------
-
-
 
 # get a description of the shapefile to use for naming outputs
 shapefile_description <- tools::file_path_sans_ext(basename(shapefile_filename))
@@ -131,37 +128,44 @@ if(independentValidationSet){
 } 
 
 
-
-# testing the influence of sampling bias
+# testing the influence of sampling bias - this code filters the "raw"
+# NEON polygon sets down to contain the same individual IDs as the corresponding
+# clipped datas set. This is meant to assess the potential influence of sampling
+# bias (since there is nearly double # of samples for the raw data sets compared
+# to those after the clipping steps), and see what effect the clipping steps 
+# have on species classification using circular polygons
 if(neonvegIDsForBothShapefiles){
-  # filter the raw NEON data down to contain the same individual ID's as the 
-  # corresponding neon_veg data set. This will remove the potential influence
-  # of sampling bias (since there is nearly double # of samples for the raw
-  # NEON data sets) and just compare any influence that the clipping/filtering
-  # steps have on the polygons 
   
-  #if(grepl("veg_points", extracted_features_filename)){
-  #  print(paste0("Filtering individualIDs to match those in veg_points:", extracted_features_filename))
-  #  neonveg_stem_IDs <- unique(droplevels(df_orig$indvdID))
-  #  filterIDs <- neonveg_stem_IDs
-  #}
-  
-  # check for the clipped halfDiameter shapefile; keep track of the individual ID's 
+  # check for the clipped half diam shapefile; keep track of the individual ID's 
   if(grepl("polygons_half_diam", extracted_features_filename)){
-    print(paste0("Filtering individualIDs to match those in the clipped half diam:", extracted_features_filename))
-    neonveg_halfDiam_IDs <- unique(droplevels(df_orig$indvdID))
-    filterIDs <- neonveg_halfDiam_IDs
+    print(paste0("Filtering individualIDs to match those in the clipped half diam polygons:", 
+                 extracted_features_filename))
+    
+    # read in the clipped half diam polygons
+    # VS-NOTE: make this a variable instead of hard-coding the file path and name 
+    df_clipped <- read.csv(file.path(dir_data_out,
+              "veg_polys_half_diam_clipped_overlap-extracted_features.csv"))
   }
   
-  # check for the neon_veg maxDiameter shapefile; keep track of the individual ID's 
+  
+  # check for the clipped max diam shapefile; keep track of the individual ID's 
   if(grepl("polygons_max_diam", extracted_features_filename)){
-    print(paste0("Filtering individualIDs to match those in neonveg_maxDiam:", 
+    print(paste0("Filtering individualIDs to match those in the clipped max diam polygons:", 
                  extracted_features_filename))
-    # read the clipped max diameter polygon file 
     
-    neonveg_maxDiam_IDs <- unique(droplevels(df_orig$indvdID))
-    filterIDs <- neonveg_maxDiam_IDs
+    # read in the clipped max diam polygons
+    # VS-NOTE: make this a variable instead of hard-coding the file path and name 
+    df_clipped <- read.csv(file.path(dir_data_out,
+                  "veg_polys_max_diam_clipped_overlap-extracted_features.csv"))
   }
+  
+  # figure out which individual IDs are present in the clipped polygon data set
+  clipped_IDs <- unique(droplevels(df_clipped$indvdID))
+  filterIDs <- clipped_IDs
+  
+  # delete the clipped data frame from memory 
+  rm(df_clipped)
+  
   df_orig <- df_orig %>% dplyr::filter(indvdID %in% filterIDs) %>% droplevels()
 }
 
@@ -226,7 +230,7 @@ if(pcaInsteadOfWavelengths == TRUE){
   
 }
 
-# VS-NOTE: scale feature values before training classifier
+# VS-NOTE: need to scale feature values before training classifier
 print("Features used in current RF model: ")
 print(colnames(features))
 
