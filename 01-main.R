@@ -37,6 +37,7 @@ dir_analysis <- file.path("analysis")
 check_create_dir(dir_analysis)
 
 
+
 # Download in-situ woody vegetation data ----------------------------------
 
 # USER-DEFINED-INPUTS
@@ -196,12 +197,13 @@ source("09-assess_accuracy.R")
 # loop through each shapefile name, read the .csv containing spectral reflectance 
 # for all trees within each data set, generate a ribbon plot and write to image file
 # in the figures/ output directory 
-for(i in 1:nrow(shapefileLayerNames)){
-  shapefile_filename <- file.path(dir_data_out, "veg_points_w_height_diam.shp")
+for(i in 1:length(dirs_to_assess)){
+  shapefile_filename <- file.path(dir_data_out, dirs_to_assess[i])
+  print(paste("creating ribbon plots for:", dirs_to_assess[i]))
   
-  createRibbonPlot(wavelengths, shapefile_filename)
+  createRibbonPlot(wavelengths, shapefile_filename, dir_data_out)
   
-  createSeparateRibbonPlots(wavelengths, shapefile_filename)
+  createSeparateRibbonPlots(wavelengths, shapefile_filename, dir_data_out)
   
 }
 
