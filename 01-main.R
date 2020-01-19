@@ -207,7 +207,6 @@ for(i in 1:length(dirs_to_assess)){
   
 }
 
-# Study area map 
-
-
+# Create study area map - highlight the NIWO location within Colorado, USA
+source("10-create_figures.R")
 

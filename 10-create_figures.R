@@ -64,8 +64,3 @@ ggplot() +
 ggsave(filename = "figures/study_area.png", device = "png", width = 8, height = 5)
 
 
-# NIWO site up close ------------------------------------------------------
-
-ggplot() +
-  #geom_sf(data = colorado) + 
-  geom_sf(data = niwo_bounds)
