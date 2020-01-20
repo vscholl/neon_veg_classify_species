@@ -4,6 +4,7 @@ rfAccuracies <- data.frame(matrix(ncol = 4, nrow = length(dirs_to_assess)))
 colnames(rfAccuracies) <- c("description", "OA_OOB", "OA_IndVal","Kappa")
 
 i <- 1
+highest_accuracy <- 0
 for(shapefile_filename in dirs_to_assess){
   print(shapefile_filename)
   
@@ -46,6 +47,18 @@ for(shapefile_filename in dirs_to_assess){
   # Accuracies data frame
   rfAccuracies$OA_IndVal[i] <- round(val_OA, digits = 2) # Overall Accuracy
   
+  # keep track of which training data set yielded the greatest accuracy
+  # and keep the confusion matrix for a figure
+  if(accuracy$PCC > highest_accuracy){
+  
+    #library(caret)
+    model_stats <- caret::confusionMatrix(data = rf_model$predicted, 
+                                          reference = rf_model$y, 
+                                          mode = "prec_recall")
+    
+    
+    
+  }
 
   i <- i + 1 
   
@@ -57,7 +70,8 @@ rfAccuracies$`Training Set` <- c("Points",
                                  "Polygons - half diameter", 
                                  "Polygons - max diameter",
                                  "Points - half diam clipped", 
-                                 "Polygons - half diam clipped", "Polygons - max diam clipped")
+                                 "Polygons - half diam clipped", 
+                                 "Polygons - max diam clipped")
 
 #library(kableExtra)
 rfAccuracies %>%
@@ -70,5 +84,8 @@ xtable::xtable(x = rfAccuracies, digits = 2)
 # Calculating precision and recall
 #library(caret) 
 #model_stats <- caret::confusionMatrix(data = rf_model$predicted, reference = rf_model$y, mode = "prec_recall")
+
+# Confusion matrix for most accurate 
+
 
 
