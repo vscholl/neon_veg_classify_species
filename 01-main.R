@@ -244,9 +244,9 @@ source("08-classify_species.R")
 dirs_to_assess <- c("veg_points_w_height_diam.shp"
                     ,"veg_polygons_half_diam.shp"
                     ,"veg_polygons_max_diam.shp"
+                    ,"veg_points_half_diam_clipped_overlap.shp"
                     ,"veg_polys_half_diam_clipped_overlap.shp"
-                    ,"veg_polys_max_diam_clipped_overlap.shp"
-                    ,"veg_points_half_diam_clipped_overlap.shp")
+                    ,"veg_polys_max_diam_clipped_overlap.shp")
 
 source("09-assess_accuracy.R")
 
