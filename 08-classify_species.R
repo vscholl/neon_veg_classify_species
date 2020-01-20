@@ -343,7 +343,7 @@ if(randomMinSamples){
   features <- rbind(taxon1, taxon2, taxon3, taxon4)
   
 } else{
-  print("Using all samples per class")
+  #print("Using all samples per class")
 }
 
 
