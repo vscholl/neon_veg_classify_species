@@ -145,6 +145,15 @@ if(neonvegIDsForBothShapefiles){
     # VS-NOTE: make this a variable instead of hard-coding the file path and name 
     df_clipped <- read.csv(file.path(dir_data_out,
               "veg_polys_half_diam_clipped_overlap-extracted_features.csv"))
+    
+    # figure out which individual IDs are present in the clipped polygon data set
+    clipped_IDs <- unique(droplevels(df_clipped$indvdID))
+    filterIDs <- clipped_IDs
+    
+    # delete the clipped data frame from memory 
+    rm(df_clipped)
+    
+    df_orig <- df_orig %>% dplyr::filter(indvdID %in% filterIDs) %>% droplevels()
   }
   
   
@@ -157,16 +166,17 @@ if(neonvegIDsForBothShapefiles){
     # VS-NOTE: make this a variable instead of hard-coding the file path and name 
     df_clipped <- read.csv(file.path(dir_data_out,
                   "veg_polys_max_diam_clipped_overlap-extracted_features.csv"))
+    
+    # figure out which individual IDs are present in the clipped polygon data set
+    clipped_IDs <- unique(droplevels(df_clipped$indvdID))
+    filterIDs <- clipped_IDs
+    
+    # delete the clipped data frame from memory 
+    rm(df_clipped)
+    
+    df_orig <- df_orig %>% dplyr::filter(indvdID %in% filterIDs) %>% droplevels()
   }
   
-  # figure out which individual IDs are present in the clipped polygon data set
-  clipped_IDs <- unique(droplevels(df_clipped$indvdID))
-  filterIDs <- clipped_IDs
-  
-  # delete the clipped data frame from memory 
-  rm(df_clipped)
-  
-  df_orig <- df_orig %>% dplyr::filter(indvdID %in% filterIDs) %>% droplevels()
 }
 
 
@@ -250,9 +260,12 @@ if(independentValidationSet){
   validationSet <- validationSet %>% 
     dplyr::select(featureNames)
   
-  if(pcaInsteadOfWavelengths){
-    # perform PCA
-    # remove the individual band reflectances
+  # perform PCA
+  # remove the individual band reflectances.
+  # this only needs to be done once, so check if the validationSet
+  # already has a column named "PC1". 
+  if(pcaInsteadOfWavelengths & !("PC1" %in% colnames(validationSet))){
+    print("performing PCA on validation set...")
     wl_removed <- validationSet %>% as.data.frame() %>% 
       dplyr::select(-c(wavelength_lut$xwavelength))
     
