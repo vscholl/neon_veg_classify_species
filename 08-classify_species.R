@@ -109,23 +109,23 @@ df_orig <- read.csv(extracted_features_filename)
 df_orig <- df_orig %>% 
   dplyr::filter(taxonID %in% taxon_list)
 
-# remove any pixels in the independent validation set
-if(independentValidationSet){
-  
-  # combine the pixelNumber, easting, and northing into a string
-  # for each row with underscore separation
-  dfIDs <- paste(df_orig[,"pixelNumber"],
-                 df_orig[,"eastingIDs"],
-                 df_orig[,"northingIDs"], 
-                 sep = "_") 
-  
-  # add this as a new column to the data frame 
-  df_orig <- df_orig %>% mutate(dfIDs = dfIDs)
-  
-  # remove any pixels that are in the independent validation set
-  df_orig <- df_orig[!(df_orig$dfIDs %in% valIDs),]
-
-} 
+# # remove any pixels in the independent validation set
+# if(independentValidationSet){
+#   
+#   # combine the pixelNumber, easting, and northing into a string
+#   # for each row with underscore separation
+#   dfIDs <- paste(df_orig[,"pixelNumber"],
+#                  df_orig[,"eastingIDs"],
+#                  df_orig[,"northingIDs"], 
+#                  sep = "_") 
+#   
+#   # add this as a new column to the data frame 
+#   df_orig <- df_orig %>% mutate(dfIDs = dfIDs)
+#   
+#   # remove any pixels that are in the independent validation set
+#   df_orig <- df_orig[!(df_orig$dfIDs %in% valIDs),]
+# 
+# } 
 
 
 # testing the influence of sampling bias - this code filters the "raw"
@@ -243,8 +243,7 @@ featureSummary <- features %>%
 print("number of samples per species class")
 print(featureSummary)
 
-# randomly select <percentTrain> of data for training,
-# use the remaining samples for validation
+
 if(independentValidationSet){
   
   # filter the data to contain only the features of interest 
