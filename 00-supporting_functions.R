@@ -757,8 +757,8 @@ createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
     # hide the "alpha" legend
     guides(alpha=FALSE) + 
     
-    # label X and Y axes 
-    labs(x = "wavelength (nm)", y = "reflectance") + 
+    # label X and Y axes. Add space between the label and axis text using \n
+    labs(x = "\nWavelength (nm)", y = "Reflectance\n") + 
     
     # set the y axis range to be consistent between plots
     ylim(0,y_max) + 
@@ -770,7 +770,9 @@ createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
                    # std dev shading
                    "(shading shows one standard deviation from mean refl range per wavelength)")) + 
     
-    theme_bw()
+    theme_bw() + 
+    
+   guides(color=guide_legend(title="Species ID"))
   
   
   
@@ -928,8 +930,8 @@ createSeparateRibbonPlots <- function(wavelengths, shapefile_filename, dir_data_
     scale_color_manual(values = shading_colors) + 
     scale_fill_manual(values = shading_colors) + 
     
-    # label X and Y axes 
-    labs(x = "wavelength (nm)", y = "reflectance") + 
+    # label X and Y axes. Add space between the label and axis text using \n
+    labs(x = "\nWavelength (nm)", y = "Reflectance\n") + 
     
     # set the y axis range to be consistent between plots
     #ylim(0,as.numeric(max(na.omit(refl_tidy$mean_plus_sd)))) + 
@@ -941,7 +943,10 @@ createSeparateRibbonPlots <- function(wavelengths, shapefile_filename, dir_data_
                    " \n",
                    # std dev shading
                    "(shading shows one standard deviation from mean refl range per wavelength)")) + 
-    theme_bw()
+    theme_bw() + 
+    
+    # remove legend since each facet box has a title with the species code
+    theme(legend.position = "none")
   
   
   
