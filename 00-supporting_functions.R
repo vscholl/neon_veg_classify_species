@@ -576,7 +576,10 @@ stack_hyperspectral <- function(h5, out_dir){
 
 # createRibbonPlot --------------------------------------------------------
 
-createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
+createRibbonPlot <- function(wavelengths, 
+                             shapefile_filename, 
+                             dir_data_out,
+                             add_title = FALSE){
   # This function creates a figure with overlapping ribbon plot for each species.
   # 
   # Args: 
@@ -609,7 +612,7 @@ createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
   
   
   # absolute maximum reflectance to set the same ylimit for the plots
-  y_max <- 0.35    #max(refl_tidy$max_reflectance, na.rm = TRUE)
+  y_max <- 0.3    #max(refl_tidy$max_reflectance, na.rm = TRUE)
   
   # remove the bad bands 
   remove_bands <- wavelengths[(wavelengths > bad_band_window_1[1] & 
@@ -708,7 +711,7 @@ createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
   shading_alpha <- 0.4
   
   # generate the ribbon plot
-  ggplot2::ggplot(refl_tidy, 
+  ribbon_plot <- ggplot2::ggplot(refl_tidy, 
          aes(x = wavelength, y = mean_reflectance, color = taxonID)) + 
     
     # ABLAL
@@ -763,22 +766,27 @@ createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
     # set the y axis range to be consistent between plots
     ylim(0,y_max) + 
     
-    # main plot title  
-    ggtitle(paste0("Mean Hyperspectral reflectance per species ", 
-                   #tools::file_path_sans_ext(str_split(basename(extracted_features_filename),"ALL_")[[1]][2]),
-                   " \n",
-                   # std dev shading
-                   "(shading shows one standard deviation from mean refl range per wavelength)")) + 
-    
     theme_bw() + 
     
-   guides(color=guide_legend(title="Species ID"))
+    guides(color=guide_legend(title="Species ID")) + 
+    
+    theme(text = element_text(size=14))
+  
+  if(add_title == TRUE){
+    # add a main plot title  
+    ribbon_plot <- ribbon_plot + 
+      ggtitle(paste0("Mean Hyperspectral reflectance per species ", 
+                     " \n",
+                     # std dev shading
+                     "(shading shows one standard deviation from mean refl range per wavelength)")) 
+  }
   
   
   
   # write plot to file 
-  ggsave(file.path(dir_data_out,paste0("ribbon_plot_", 
+  ggsave(filename = file.path(dir_data_out,paste0("ribbon_plot_", 
                 tools::file_path_sans_ext(basename(extracted_features_filename)), ".png")), 
+         plot = ribbon_plot,
          width = 10, height = 6)
   
   
@@ -787,7 +795,10 @@ createRibbonPlot <- function(wavelengths, shapefile_filename, dir_data_out){
 
 # createSeparateRibbonPlots -----------------------------------------------
 
-createSeparateRibbonPlots <- function(wavelengths, shapefile_filename, dir_data_out){
+createSeparateRibbonPlots <- function(wavelengths, 
+                                      shapefile_filename, 
+                                      dir_data_out,
+                                      add_title = FALSE){
   # This function creates a figure with a separate ribbon plot for each species.
   # 
   # Args: 
@@ -820,7 +831,7 @@ createSeparateRibbonPlots <- function(wavelengths, shapefile_filename, dir_data_
   
   
   # absolute maximum reflectance to set the same ylimit for the plots
-  y_max <- 0.35    #max(refl_tidy$max_reflectance, na.rm = TRUE)
+  y_max <- 0.3    #max(refl_tidy$max_reflectance, na.rm = TRUE)
   
   # remove the bad bands 
   remove_bands <- wavelengths[(wavelengths > bad_band_window_1[1] & 
@@ -919,7 +930,7 @@ createSeparateRibbonPlots <- function(wavelengths, shapefile_filename, dir_data_
   shading_alpha <- 0.4
   
   # FACET WRAP mean reflectance curves with ribbon (+/- 1 SD)
-  ggplot(refl_tidy, aes(x = wavelength, 
+  ribbon_plot <- ggplot(refl_tidy, aes(x = wavelength, 
                         y = mean_reflectance)) + 
     facet_wrap(~taxonID) +
     geom_ribbon(alpha = 0.5, aes(ymin = mean_minus_sd, 
@@ -937,22 +948,28 @@ createSeparateRibbonPlots <- function(wavelengths, shapefile_filename, dir_data_
     #ylim(0,as.numeric(max(na.omit(refl_tidy$mean_plus_sd)))) + 
     ylim(0,y_max) + 
     
-    # main plot title  
-    ggtitle(paste0("Mean Hyperspectral reflectance per species ", 
-                   #tools::file_path_sans_ext(str_split(basename(extracted_features_filename),"_")[[1]][2]),
-                   " \n",
-                   # std dev shading
-                   "(shading shows one standard deviation from mean refl range per wavelength)")) + 
     theme_bw() + 
     
     # remove legend since each facet box has a title with the species code
-    theme(legend.position = "none")
+    theme(legend.position = "none") + 
+    
+    theme(text = element_text(size=14))
+  
+    if(add_title == TRUE){
+      # add a main plot title  
+      ribbon_plot <- ribbon_plot + 
+        ggtitle(paste0("Mean Hyperspectral reflectance per species ", 
+                     " \n",
+                     # std dev shading
+                     "(shading shows one standard deviation from mean refl range per wavelength)")) 
+    }
   
   
   
   # write plot to file 
-  ggsave(file.path(dir_data_out,paste0("separate_ribbon_plot_", 
+  ggsave(filename = file.path(dir_data_out,paste0("separate_ribbon_plot_", 
          tools::file_path_sans_ext(basename(extracted_features_filename)), ".png")), 
+         plot = ribbon_plot,
          width = 10, height = 6)
   
   
