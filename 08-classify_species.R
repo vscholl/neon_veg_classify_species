@@ -256,26 +256,33 @@ print(featureSummary)
 
 if(independentValidationSet){
   
-  # filter the data to contain only the features of interest 
-  validationSet <- validationSet %>% 
-    dplyr::select(featureNames)
-  
   # perform PCA
   # remove the individual band reflectances.
   # this only needs to be done once, so check if the validationSet
   # already has a column named "PC1". 
-  if(pcaInsteadOfWavelengths & !("PC1" %in% colnames(validationSet))){
-    print("performing PCA on validation set...")
-    wl_removed <- validationSet %>% as.data.frame() %>% 
-      dplyr::select(-c(wavelength_lut$xwavelength))
+  if(pcaInsteadOfWavelengths == TRUE){
+    message("in first loop")
     
-    # isolate the individual band reflectances
-    val_hs <- validationSet %>% 
-      dplyr::select(c(wavelength_lut$xwavelength)) %>% as.matrix()
+    if(("PC1" %in% colnames(validationSet)) == FALSE){
+      
+      # filter the data to contain only the features of interest 
+      validationSet <- validationSet %>% 
+        dplyr::select(featureNames)
+      
+      print("performing PCA on validation set...")
+      wl_removed <- validationSet %>% as.data.frame() %>% 
+        dplyr::select(-c(wavelength_lut$xwavelength))
+      
+      # isolate the individual band reflectances
+      val_hs <- validationSet %>% 
+        dplyr::select(c(wavelength_lut$xwavelength)) %>% as.matrix()
+      
+      val_hs_pca <- stats::prcomp(val_hs, center = TRUE, scale. = TRUE)
+      summary(val_hs_pca)
+      validationSet <- cbind(wl_removed, val_hs_pca$x[,1:nPCs])
+      
+    }
     
-    val_hs_pca <- stats::prcomp(val_hs, center = TRUE, scale. = TRUE)
-    summary(val_hs_pca)
-    validationSet <- cbind(wl_removed, val_hs_pca$x[,1:nPCs])
   }
   
   
