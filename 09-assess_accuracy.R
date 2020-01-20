@@ -1,7 +1,7 @@
 
 # create an empty matrix to summarise the model Accuracies
 rfAccuracies <- data.frame(matrix(ncol = 4, nrow = length(dirs_to_assess)))
-colnames(rfAccuracies) <- c("Training Set", "OA_OOB", "OA_IndVal","Kappa")
+colnames(rfAccuracies) <- c("description", "OA_OOB", "OA_IndVal","Kappa")
 
 i <- 1
 for(shapefile_filename in dirs_to_assess){
@@ -30,7 +30,7 @@ for(shapefile_filename in dirs_to_assess){
   # record each accuracy metric in the table for a final comparison.
   # round each value to the nearest decimal place 
   rfAccuracies$OA_OOB[i] <- (accuracy$PCC / 100) # Overall Accuracy
-  rfAccuracies$K[i] <- round(accuracy$kappa, 3) #Cohen's Kappa 
+  rfAccuracies$Kappa[i] <- round(accuracy$kappa, 3) #Cohen's Kappa 
   rfAccuracies$description[i] <- shapefile_description
   
   # predict species for the independent validation set -------------
@@ -46,11 +46,18 @@ for(shapefile_filename in dirs_to_assess){
   # Accuracies data frame
   rfAccuracies$OA_IndVal[i] <- round(val_OA, digits = 2) # Overall Accuracy
   
-  
-  
+
   i <- i + 1 
   
 }
+
+# update the column names and training set names for the manuscript table 
+colnames(rfAccuracies) <- c("Training Set", "OOB Accuracy", "IV Accuracy","Kappa")
+rfAccuracies$`Training Set` <- c("Points", 
+                                 "Polygons - half diameter", 
+                                 "Polygons - max diameter",
+                                 "Points - half diam clipped", 
+                                 "Polygons - half diam clipped", "Polygons - max diam clipped")
 
 #library(kableExtra)
 rfAccuracies %>%
@@ -61,7 +68,7 @@ rfAccuracies %>%
 xtable::xtable(x = rfAccuracies, digits = 2)
 
 # Calculating precision and recall
-library(caret) 
-model_stats <- caret::confusionMatrix(data = rf_model$predicted, reference = rf_model$y, mode = "prec_recall")
+#library(caret) 
+#model_stats <- caret::confusionMatrix(data = rf_model$predicted, reference = rf_model$y, mode = "prec_recall")
 
 
