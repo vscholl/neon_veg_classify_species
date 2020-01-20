@@ -33,8 +33,8 @@ dir_data_out <- file.path("data","data_output")
 check_create_dir(dir_data_raw)
 check_create_dir(dir_data_out)
 # Create a folder to store outputs for analysis 
-dir_analysis <- file.path("analysis")
-check_create_dir(dir_analysis)
+dir_results <- file.path("results")
+check_create_dir(dir_results)
 
 
 
@@ -248,11 +248,6 @@ dirs_to_assess <- c("veg_points_w_height_diam.shp"
                     ,"veg_polys_max_diam_clipped_overlap.shp"
                     ,"veg_points_half_diam_clipped_overlap.shp")
 
-# VS-NOTE: need to calculate Indedendent validation set accuracy within script 8
-# VS-NOTE: accuracy values are slightly different compared to initial analysis.
-# VS-NOTE: need to get the neonvegIDsForBothShapefiles step working to filter down
-# the same trees for a comparison to remove the sampling bias... 
-# how to do this robustly? 
 source("09-assess_accuracy.R")
 
 
