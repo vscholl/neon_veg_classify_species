@@ -140,35 +140,35 @@ move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_hs_refl
 # "DP3.30026.001" - "veg_indices"       Spectrometer-derived vegetation indices 
 # "DP3.30006.001" - "hs_refl"           Spectometer-derived surface reflectance
 
-data_products <- data.frame(id = c("DP3.30015.001"
-                                   ,"DP3.30025.001"
-                                   ,"DP3.30010.001"
-                                   ,"DP3.30026.001"
-                                   ,"DP3.30006.001")
-                            ,name = c("chm"
-                                      ,"aspect_slope"
-                                      ,"rgb"
-                                      ,"veg_indices"
-                                      ,"hs_refl"))
+# data_products <- data.frame(id = c("DP3.30015.001"
+#                                    ,"DP3.30025.001"
+#                                    ,"DP3.30010.001"
+#                                    ,"DP3.30026.001"
+#                                    ,"DP3.30006.001")
+#                             ,name = c("chm"
+#                                       ,"aspect_slope"
+#                                       ,"rgb"
+#                                       ,"veg_indices"
+#                                       ,"hs_refl"))
 
 
 # Can this be turned into a loop?
 # How to make R wait for user input (y/n) and wait for the files to download? 
 
-for (i in nrow(data_products)){
-  
-  dp_id <- as.character(data_products$id[i])
-  dp_name <- as.character(data_products$name[i])
-  
-  print(paste("Downloading data product ID", dp_id))
-  
-  neonUtilities::byTileAOP(
-    dp_id = dp_id
-    ,site = site_code
-    ,year = aop_data_year
-    ,savepath = dir_data_raw
-    ,easting = veg_coordinates$eastings
-    ,northing = veg_coordinates$northings
-    ,buffer = buffer_val)
+# for (i in nrow(data_products)){
+#   
+#   dp_id <- as.character(data_products$id[i])
+#   dp_name <- as.character(data_products$name[i])
+#   
+#   print(paste("Downloading data product ID", dp_id))
+#   
+#   neonUtilities::byTileAOP(
+#     dp_id = dp_id
+#     ,site = site_code
+#     ,year = aop_data_year
+#     ,savepath = dir_data_raw
+#     ,easting = veg_coordinates$eastings
+#     ,northing = veg_coordinates$northings
+#     ,buffer = buffer_val)
   
 } 
