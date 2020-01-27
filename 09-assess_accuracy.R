@@ -105,15 +105,16 @@ rfAccuracies %>%
 
 # print a LaTeX-syntax table to the console presenting the accuracies 
 #library(xtable)
-xtable::xtable(x = rfAccuracies, digits = 3)
+print("Overall accuracies table, in LaTeX table format: , ")
+print(xtable::xtable(x = rfAccuracies, digits = 3))
 
 # pring a LaTeX-syntax table to the console with the confusion matrix
 # and users/producers accuracies for each species, for the model with the highest 
 # overall OOB accuracy 
-print("Confusion matrix with precision and recall for most accurate set, ")
+print("Confusion matrix with precision and recall for most accurate set, in LaTeX format: ")
 print(highest_accuracy_set)
 
-xtable::xtable(x = confusion_matrix_OOB, digits = 1)
+print(xtable::xtable(x = confusion_matrix_OOB, digits = 1))
 
 
 
