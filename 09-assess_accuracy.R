@@ -3,6 +3,7 @@
 rfAccuracies <- data.frame(matrix(ncol = 4, nrow = length(dirs_to_assess)))
 colnames(rfAccuracies) <- c("description", "OA_OOB", "OA_IndVal","Kappa")
 
+
 i <- 1
 highest_accuracy <- 0
 for(shapefile_filename in dirs_to_assess){
@@ -34,6 +35,20 @@ for(shapefile_filename in dirs_to_assess){
   rfAccuracies$Kappa[i] <- round(accuracy$kappa, 3) #Cohen's Kappa 
   rfAccuracies$description[i] <- shapefile_description
   
+  
+  # OOB CONFUSION MATRIX WITH USERS AND PRODUCER'S ACCURACIES
+  # convert confusion table to a data frame 
+  confusion_oob <- as.data.frame.matrix(accuracy$confusion)
+  # add a row to the confusion matrix with User's accuracy 
+  confusion_oob <- rbind(confusion_oob,
+                        UA = accuracy$users.accuracy)
+  # add a column with Producer's accuracy
+  confusion_oob$PA <- c(accuracy$users.accuracy, "")
+  # VS-NOTE: round the count values for each species to be integers ??
+  print("CONFUSION MATRIX OOB:")
+  print(confusion_oob)
+
+  
   # predict species for the independent validation set -------------
   predValidation <- predict(rf_model, validationSet, type = "class")
   confusionTable <- table(predValidation, validationSet$taxonID)
@@ -45,16 +60,26 @@ for(shapefile_filename in dirs_to_assess){
                as.character(val_OA)))
   # write the Overall Accuracy for the independent validation set to the
   # Accuracies data frame
-  rfAccuracies$OA_IndVal[i] <- round(val_OA, digits = 2) # Overall Accuracy
+  rfAccuracies$OA_IndVal[i] <- val_OA  # Overall Accuracy
   
   # keep track of which training data set yielded the greatest accuracy
   # and keep the confusion matrix for a figure
   if(accuracy$PCC > highest_accuracy){
+    
+    # set a new highest accuracy for the sets being compared
+    highest_accuracy <- accuracy$PCC
+    highest_accuracy_set <- shapefile_filename
   
     #library(caret)
     model_stats <- caret::confusionMatrix(data = rf_model$predicted, 
                                           reference = rf_model$y, 
                                           mode = "prec_recall")
+    
+    # confusion matrix for validation set?
+    #confusion_iv <- as.data.frame.matrix(model_stats$table)
+    
+    # keep track of the OOB confusion matrix for the model w highest accuracy 
+    confusion_matrix_OOB <- confusion_oob
     
     
     
@@ -75,17 +100,20 @@ rfAccuracies$`Training Set` <- c("Points",
 
 #library(kableExtra)
 rfAccuracies %>%
-  kableExtra::kable(digits = 2) %>%
+  kableExtra::kable(digits = 3) %>%
   kableExtra::kable_styling(bootstrap_options = c("striped", "hover","condensed"))
 
+# print a LaTeX-syntax table to the console presenting the accuracies 
 #library(xtable)
-xtable::xtable(x = rfAccuracies, digits = 2)
+xtable::xtable(x = rfAccuracies, digits = 3)
 
-# Calculating precision and recall
-#library(caret) 
-#model_stats <- caret::confusionMatrix(data = rf_model$predicted, reference = rf_model$y, mode = "prec_recall")
+# pring a LaTeX-syntax table to the console with the confusion matrix
+# and users/producers accuracies for each species, for the model with the highest 
+# overall OOB accuracy 
+print("Confusion matrix with precision and recall for most accurate set, ")
+print(highest_accuracy_set)
 
-# Confusion matrix for most accurate 
+xtable::xtable(x = confusion_matrix_OOB, digits = 1)
 
 
 
