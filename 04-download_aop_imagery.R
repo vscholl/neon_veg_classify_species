@@ -20,7 +20,7 @@ dp_chm <- "DP3.30015.001"
 neonUtilities::byTileAOP(
   dpID = dp_chm
   ,site = site_code
-  ,year = data_year
+  ,year = aop_data_year
   ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
@@ -38,7 +38,7 @@ dp_aspect_slope <- "DP3.30025.001"
 neonUtilities::byTileAOP(
   dpID = dp_aspect_slope
   ,site = site_code
-  ,year = data_year
+  ,year = aop_data_year
   ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
@@ -62,7 +62,7 @@ dp_rgb <- "DP3.30010.001"
 neonUtilities::byTileAOP(
   dpID = dp_rgb
   ,site = site_code
-  ,year = data_year
+  ,year = aop_data_year
   ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
@@ -81,7 +81,7 @@ dp_veg_indices <- "DP3.30026.001"
 neonUtilities::byTileAOP(
   dpID = dp_veg_indices
   ,site = site_code
-  ,year = data_year
+  ,year = aop_data_year
   ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
@@ -101,7 +101,7 @@ dp_hs_refl <- "DP3.30006.001"
 neonUtilities::byTileAOP(
   dpID = dp_hs_refl
   ,site = site_code
-  ,year = data_year
+  ,year = aop_data_year
   ,savepath = dir_data_raw
   ,easting = veg_coordinates$eastings
   ,northing = veg_coordinates$northings
@@ -124,7 +124,7 @@ move_downloaded_files(dir_out = dir_data_raw, dp_id = dp_hs_refl
 #neonUtilities::byFileAOP(
 #  dpID = dp_chm
 #  ,site = site_code
-#  ,year = data_year
+#  ,year = aop_data_year
 #  ,check.size = TRUE
 #  ,savepath = dir_data_raw)
 
@@ -165,7 +165,7 @@ for (i in nrow(data_products)){
   neonUtilities::byTileAOP(
     dp_id = dp_id
     ,site = site_code
-    ,year = data_year
+    ,year = aop_data_year
     ,savepath = dir_data_raw
     ,easting = veg_coordinates$eastings
     ,northing = veg_coordinates$northings
