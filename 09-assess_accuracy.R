@@ -1,3 +1,10 @@
+# This script gathers the accuracies from a series os of classification models
+# and presents them in a table:
+# Out-of-Bag accuracy, independent validation set accuracy, and Cohen's kappa.
+#
+# This script also creates a confusion matrix to show the classification 
+# accuracy for each species, in addition to user's and producer's accuracy. 
+
 
 # create an empty matrix to summarise the model Accuracies
 rfAccuracies <- data.frame(matrix(ncol = 4, nrow = length(dirs_to_assess)))
@@ -43,7 +50,7 @@ for(shapefile_filename in dirs_to_assess){
   confusion_oob <- rbind(confusion_oob,
                         UA = accuracy$users.accuracy)
   # add a column with Producer's accuracy
-  confusion_oob$PA <- c(accuracy$users.accuracy, "")
+  confusion_oob$PA <- c(accuracy$producers.accuracy, "")
   # VS-NOTE: round the count values for each species to be integers ??
   print("CONFUSION MATRIX OOB:")
   print(confusion_oob)
