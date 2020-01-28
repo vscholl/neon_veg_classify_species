@@ -64,3 +64,21 @@ ggplot() +
 ggsave(filename = "figures/study_area.png", device = "png", width = 8, height = 5)
 
 
+
+# Ribbon plots ------------------------------------------------------------
+
+# Ribbon plots 
+
+# loop through each shapefile name, read the .csv containing spectral reflectance 
+# for all trees within each data set, generate a ribbon plot and write to image file
+# in the figures/ output directory 
+for(i in 1:length(dirs_to_assess)){
+  shapefile_filename <- file.path(dir_data_out, dirs_to_assess[i])
+  print(paste("creating ribbon plots for:", dirs_to_assess[i]))
+  
+  createRibbonPlot(wavelengths, shapefile_filename, dir_data_out)
+  
+  createSeparateRibbonPlots(wavelengths, shapefile_filename, dir_data_out)
+  
+}
+
