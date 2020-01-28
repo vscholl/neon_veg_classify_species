@@ -88,6 +88,41 @@ for(shapefile_filename in dirs_to_assess){
     # keep track of the OOB confusion matrix for the model w highest accuracy 
     confusion_matrix_OOB <- confusion_oob
     
+    # Variable importance ----------------------------
+    
+    # What variables were important? --> Consult the variable importance plots
+    
+    varImportance <- data.frame(randomForest::importance(rf_model))
+    varImportance$feature <- rownames(varImportance)
+    varImportance <- varImportance %>% 
+      dplyr::select(feature, MeanDecreaseAccuracy, MeanDecreaseGini, everything())
+    varImportanceMDA <- varImportance %>% dplyr::arrange(desc(MeanDecreaseAccuracy))
+    varImportanceMDG <- varImportance %>% dplyr::arrange(desc(MeanDecreaseGini))
+    
+    # MDA importance bar plot 
+    ggplot(data = varImportanceMDA, aes(x = reorder(feature, MeanDecreaseAccuracy), 
+                                        y = MeanDecreaseAccuracy
+                                        #,fill = MeanDecreaseAccuracy
+                                        )) + 
+      geom_bar(stat = 'identity', color = "black", size = 0.1, width = 0.5, show.legend = FALSE) + 
+      labs(x = "AOP-derived feature\n", y = "Mean Decrease in Accuracy") +
+      coord_flip() + 
+      theme_bw() + 
+      theme(axis.text=element_text(size=12),
+            axis.title=element_text(size=14)) 
+    
+    #+ ggtitle("AOP-derived feature importance: Mean Decrease in Accuracy")
+    
+    # MDG importance bar plot 
+    ggplot(data = varImportanceMDG, aes(x = reorder(feature, MeanDecreaseGini), 
+                                        y = MeanDecreaseGini
+    )) + 
+      geom_bar(stat = 'identity', color = "black", size = 0.1, width = 0.5, show.legend = FALSE) + 
+      labs(x = "AOP-derived feature\n", y = "Mean Decrease Gini") +
+      coord_flip() + 
+      theme_bw() + 
+      theme(axis.text=element_text(size=12),
+            axis.title=element_text(size=14)) 
     
     
   }
