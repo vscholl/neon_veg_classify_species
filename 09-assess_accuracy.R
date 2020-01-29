@@ -90,39 +90,68 @@ for(shapefile_filename in dirs_to_assess){
     
     # Variable importance ----------------------------
     
+    # create a figure with two plots, MDA and MDG importance
+    
     # What variables were important? --> Consult the variable importance plots
     
     varImportance <- data.frame(randomForest::importance(rf_model))
     varImportance$feature <- rownames(varImportance)
+    
+    # rename the features for easier interpretation in the variable importance plot
+    varImportance$feature_orig <- varImportance$feature
+    varImportance$feature[varImportance$feature == "rgb_mean_sd_B"] = "RGB blue"
+    varImportance$feature[varImportance$feature == "rgb_mean_sd_G"] = "RGB green"
+    varImportance$feature[varImportance$feature == "rgb_mean_sd_R"] = "RGB red"
+    
     varImportance <- varImportance %>% 
       dplyr::select(feature, MeanDecreaseAccuracy, MeanDecreaseGini, everything())
     varImportanceMDA <- varImportance %>% dplyr::arrange(desc(MeanDecreaseAccuracy))
     varImportanceMDG <- varImportance %>% dplyr::arrange(desc(MeanDecreaseGini))
     
     # MDA importance bar plot 
-    ggplot(data = varImportanceMDA, aes(x = reorder(feature, MeanDecreaseAccuracy), 
+    mda_plot <- ggplot(data = varImportanceMDA, aes(x = reorder(feature, MeanDecreaseAccuracy), 
                                         y = MeanDecreaseAccuracy
                                         #,fill = MeanDecreaseAccuracy
                                         )) + 
       geom_bar(stat = 'identity', color = "black", size = 0.1, width = 0.5, show.legend = FALSE) + 
-      labs(x = "AOP-derived feature\n", y = "Mean Decrease in Accuracy") +
+      labs(x = "AOP-derived feature\n", 
+           y = "Mean Decrease in Accuracy") +
+      # x-axis label gets cut off otherwise after coord_flip
+      ylim(0, max(varImportanceMDA$MeanDecreaseAccuracy) + 10) + 
       coord_flip() + 
       theme_bw() + 
       theme(axis.text=element_text(size=12),
-            axis.title=element_text(size=14)) 
+            axis.title=element_text(size=16)) 
     
     #+ ggtitle("AOP-derived feature importance: Mean Decrease in Accuracy")
     
     # MDG importance bar plot 
-    ggplot(data = varImportanceMDG, aes(x = reorder(feature, MeanDecreaseGini), 
-                                        y = MeanDecreaseGini
-    )) + 
+    mdg_plot <- ggplot(data = varImportanceMDG, 
+                       aes(x = reorder(feature, MeanDecreaseGini), 
+                           y = MeanDecreaseGini)) + 
       geom_bar(stat = 'identity', color = "black", size = 0.1, width = 0.5, show.legend = FALSE) + 
-      labs(x = "AOP-derived feature\n", y = "Mean Decrease Gini") +
+      labs(x = "",  # no y-axis label since it's the same as the MDA plot on the left
+           y = "Mean Decrease Gini Index") + 
+      # x-axis label gets cut off otherwise after coord_flip
+      ylim(0, max(varImportanceMDA$MeanDecreaseGini) + 10) + 
       coord_flip() + 
       theme_bw() + 
       theme(axis.text=element_text(size=12),
-            axis.title=element_text(size=14)) 
+            axis.title=element_text(size=16)) 
+    
+    # generate the plot to view in RStudio
+    gridExtra::grid.arrange(mda_plot, 
+                            mdg_plot, 
+                            nrow = 1
+                            # ,top = "Variable Importance" # don't need main title for figure in manuscript 
+                            )
+    
+    # write the plot to an image file
+    var_imp_plot <- arrangeGrob(mda_plot, 
+                                mdg_plot, 
+                                nrow = 1) 
+    ggsave(filename = file.path(dir_results, "variable_importance.png"), 
+           plot = var_imp_plot, width = 9, units = "in", dpi = 500)
     
     
   }

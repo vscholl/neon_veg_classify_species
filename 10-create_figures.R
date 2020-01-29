@@ -61,7 +61,8 @@ ggplot() +
   theme_bw() 
 
 # write map to an image file 
-ggsave(filename = "figures/study_area.png", device = "png", width = 8, height = 5)
+ggsave(filename = file.path(dir_results, "study_area.png"), 
+       device = "png", width = 8, height = 5)
 
 
 

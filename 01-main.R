@@ -21,6 +21,7 @@ library(raster)
 library(rgeos)
 library(tools)
 library(randomForest) 
+library(gridExtra)
 
 
 # Load custom supporting functions 
