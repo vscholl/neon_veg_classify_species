@@ -115,7 +115,7 @@ for(shapefile_filename in dirs_to_assess){
                                         )) + 
       geom_bar(stat = 'identity', color = "black", size = 0.1, width = 0.5, show.legend = FALSE) + 
       labs(x = "AOP-derived feature\n", 
-           y = "Mean Decrease in Accuracy (MDA)") +
+           y = "Mean Decrease in Accuracy") +
       # x-axis label gets cut off otherwise after coord_flip
       ylim(0, max(varImportanceMDA$MeanDecreaseAccuracy) + 10) + 
       coord_flip() + 
@@ -131,7 +131,7 @@ for(shapefile_filename in dirs_to_assess){
                            y = MeanDecreaseGini)) + 
       geom_bar(stat = 'identity', color = "black", size = 0.1, width = 0.5, show.legend = FALSE) + 
       labs(x = "",  # no y-axis label since it's the same as the MDA plot on the left
-           y = "Mean Decrease in Gini (MDG)") + 
+           y = "Mean Decrease in Gini") + 
       # x-axis label gets cut off otherwise after coord_flip
       ylim(0, max(varImportanceMDA$MeanDecreaseGini) + 10) + 
       coord_flip() + 
