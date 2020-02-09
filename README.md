@@ -22,11 +22,12 @@ Perform tree species classification using freely available data from the Nationa
 
 In RStudio, click the "neon_veg_classify_species.Rproj" file to open this R project.
 
-Open "01-main.R". Within this main script, run each script in sequence:
+Open "01-main.R". 
 
 ### 1. Main
 Install packages and define parameters for the other scripts. 
 Download NEON woody vegetation data from the API and load it directly into R. 
+Within this main script, run each of the following scripts in sequence to reproduce the analysis:
 
 ### 2. Create tree features
 A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
