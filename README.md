@@ -63,7 +63,10 @@ Read each of the remote sensing data products and stack them into a single data 
 
 ### 6. Plot AOP imagery
 
-For a specified AOP imagery tile, create plots to visualize the remote sensing data: RGB digital camera image, RGB composite using hyperspectral bands, canopy height model, slope, aspect, and NDVI. 
+For a specified AOP imagery tile, create plots to visualize the remote sensing data. 
+These plots include a RGB composite using hyperspectral bands, canopy height model, high-resolution digital camera RGB image:
+
+![Image of AOP images](https://github.com/vscholl/neon_veg_classify_species/blob/master/images/aop%20images.png) 
 
 
 ### 7. Extract training features 
