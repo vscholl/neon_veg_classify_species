@@ -104,7 +104,7 @@ wavelengths = as.numeric(unlist(read.table(file.path(dir_data_out,
 # Plot AOP imagery --------------------------------------------------------
 
 # USER-DEFINED-INPUT
-# Specify which tile to plot. 452000_4432000 has a visible road. 
+# Specify which tile to plot. 452000_4432000 has a visible road at NIWO site. 
 east_north_string <- "452000_4432000"
 
 source("06-plot_aop_imagery.R")

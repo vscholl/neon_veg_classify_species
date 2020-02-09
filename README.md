@@ -9,6 +9,14 @@ Perform tree species classification using freely available data from the Nationa
 - neonUtilities
 - geoNEON 
 - dplyr
+- stringr
+- sp
+- raster
+- rgeos
+- tools
+- randomForest
+- gridExtra
+
 
 ### Workflow
 
@@ -55,19 +63,21 @@ Read each of the remote sensing data products and stack them into a single data 
 For a specified AOP imagery tile, create plots to visualize the remote sensing data: RGB digital camera image, RGB composite using hyperspectral bands, canopy height model, slope, aspect, and NDVI. 
 
 
-
-Create plots for a specific AOP imagery tile
-
-# Optionally save the RGB composite images to file
-# for the resambled high resolution digital camera imagery
-# and the hyperspectral imagery. 
-
 ### 7. Extract training features 
+
+Extract features (remote sensing image data values) for each sample (pixel) within the specified shapefile (containing points or polygons that correspond to trees at the NEON site).
+
 
 ### 8. Classify species 
 
+Train a Random Forest (RF) model to classify tree species using in-situ tree species data as labels and remote sensing data as descriptive features. 
+
+
 ### 9. Assess accuracy
+
+Compare classification accuracies across a series of RF models and present them in a table. 
+Create a confusion matrix to show the classification accuracy for each species, in addition to user's and producer's accuracy metrics. 
 
 ### 10. Create figures 
 
-
+Create figures for the manuscript: location of the NEON NIWO site within the United States, along with ribbon plots to illustrate the spectral signatures extracted for each species. 
