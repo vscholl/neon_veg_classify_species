@@ -3,9 +3,8 @@
 # for the resambled high resolution digital camera imagery
 # and the hyperspectral imagery. 
 
-# specify which tile to plot.
-# 452000_4432000 has a visible road (defining feature)
-#east_north_string <- "452000_4432000"
+# specify which tile (.rds stacked AOP data file) to plot.
+# 452000_4432000 has a visible road (defining feature) at the NIWO site
 stacked_aop_data_filename = file.path(dir_data_out,
                                       "stacked_aop_data",
                                       paste0("stacked_aop_data_",

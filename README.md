@@ -52,12 +52,22 @@ Read each of the remote sensing data products and stack them into a single data 
 
 ### 6. Plot AOP imagery
 
-(optional) 
+For a specified AOP imagery tile, create plots to visualize the remote sensing data: RGB digital camera image, RGB composite using hyperspectral bands, canopy height model, slope, aspect, and NDVI. 
 
 
 
+Create plots for a specific AOP imagery tile
 
-#### VS-NOTE: 
-To do:
-- Check that the area threshold is properly applied in the clip_overlap step, since geometries are converted from SF to Spatial
-- Remove invalid geometries after clip_polygon based on the sf::is_valid logical result 
+# Optionally save the RGB composite images to file
+# for the resambled high resolution digital camera imagery
+# and the hyperspectral imagery. 
+
+### 7. Extract training features 
+
+### 8. Classify species 
+
+### 9. Assess accuracy
+
+### 10. Create figures 
+
+
