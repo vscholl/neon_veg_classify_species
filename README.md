@@ -33,15 +33,17 @@ Within this main script, run each of the following scripts in sequence to reprod
 A point and circular polygon feature is created based on each tree location and maximum crown diameter measurement. These features are saved as shapefiles within the "data/data_output" folder. 
 
 ### 3. Process tree features
-Processing steps are applied to the tree features generated using in-situ NEON woody vegetation structure data:
+The proposed "clipping workflow" is applied to the tree polygons generated using in-situ NEON woody vegetation structure data:
 
 1. Identical multi-bole entries are identified and excluded from subsequent analysis to remove duplicated points or polygons present in the raw data set.
 
-2. An area threshold is applied to remove any small trees area values less than the area of four hyperspectral pixels.
+2. An area threshold is applied to remove any small trees area values less than the area of two hyperspectral pixels.
 
-3. "Engulfed” polygons, those which are shorter and completely within the boundaries of other polygons, are removed from subsequent analysis Since they likely cannot be observed from the airborne perspective. Remaining polygons were checked for overlap with neighboring polygons. For each overlapping pair of polygons, shorter polygons were clipped by taller ones. If the remaining clipped area was smaller than the aforementioned area threshold, it was deleted. 
+3. "Occluded” polygons, those which are shorter and completely within the boundaries of other polygons, are removed from subsequent analysis Since they likely cannot be observed from the airborne perspective. Remaining polygons were checked for overlap with neighboring polygons. For each overlapping pair of polygons, shorter polygons were clipped by taller ones. If the remaining clipped area was smaller than the aforementioned area threshold, it was deleted. 
 
 At this point, this workflow has generated a collection of polygons that will theoretically intersect with independent pixels in the airborne remote sensing data.
+
+![Image of Clipping Workflow](https://github.com/vscholl/neon_veg_classify_species/blob/master/images/clipping%20workflow.png)
 
 ### 4. Download AOP imagery
 
